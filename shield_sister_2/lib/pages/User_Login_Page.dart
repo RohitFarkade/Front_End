@@ -9,295 +9,203 @@ class UserLoginPage extends StatefulWidget {
   @override
   _UserLoginPageState createState() => _UserLoginPageState();
 }
+
 final ThemeData theme = ThemeData(
   textTheme: GoogleFonts.poppinsTextTheme(),
-  // Applies Poppins font to the entire text theme
 );
+
 class _UserLoginPageState extends State<UserLoginPage> {
   final AuthService authService = AuthService();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
+  void login() async {
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
 
-//   void login() async {
-//   final email = emailController.text.trim();
-//   final password = passwordController.text.trim();
-
-//   if (email.isEmpty || password.isEmpty) {
-//     final snackBar = const SnackBar(
-//       content: Text('Email and Password cannot be empty', style: TextStyle(color: Colors.white)),
-//       duration: Duration(seconds: 2),
-//     );
-//     ScaffoldMessenger.of(context).showSnackBar(snackBar);
-//     return;
-//   }
-
-//   try {
-//     final result = await authService.login(email, password);
-
-//     if (result.containsKey('message') && result['message'] == 'Login successful') {
-//       final snackBar = const SnackBar(
-//         content: Text('Login Successful', style: TextStyle(color: Colors.white)),
-//         duration: Duration(seconds: 2),
-//       );
-//       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-//       Navigator.pushReplacementNamed(context, '/bot');
-//     } else {
-//       final snackBar = SnackBar(
-//         content: Text(
-//           result['message'] ?? 'Unknown error occurred',
-//           style: const TextStyle(color: Colors.white),
-//         ),
-//         duration: const Duration(seconds: 2),
-//       );
-//       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-//     }
-//   } catch (e) {
-//     // Display an error message if something unexpected happens.
-//     final snackBar = SnackBar(
-//       content: Text(
-//         'An unexpected error occurred: $e',
-//         style: const TextStyle(color: Colors.white),
-//       ),
-//       duration: const Duration(seconds: 2),
-//     );
-//     ScaffoldMessenger.of(context).showSnackBar(snackBar);
-//   }
-// }
-void login() async {
-  final email = emailController.text.trim();
-  final password = passwordController.text.trim();
-
-  if (email.isEmpty || password.isEmpty) {
-    final snackBar = const SnackBar(
-      content: Text('Email and Password cannot be empty', style: TextStyle(color: Colors.white)),
-      duration: Duration(seconds: 2),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    return;
-  }
-
-  try {
-    final result = await authService.login(email, password);
-
-    if (result.containsKey('message') && result['message'] == 'Login successful') {
-      // Save the user ID and JWT token
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('userId', result['user']['_id']);
-      await prefs.setString('jwtToken', result['token']);
-      await prefs.setString('username', result['user']['fullname']);
-      await prefs.setString('email', result['user']['email']);
-
-
-
-      final snackBar = const SnackBar(
-        content: Text('Login Successful', style: TextStyle(color: Colors.white)),
-        duration: Duration(seconds: 2),
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Email and Password cannot be empty')),
       );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      Navigator.pushReplacementNamed(context, '/bot');
-    } else {
-      final snackBar = SnackBar(
-        content: Text(
-          result['message'] ?? 'Unknown error occurred',
-          style: const TextStyle(color: Colors.white),
-        ),
-        duration: const Duration(seconds: 2),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
     }
-  } catch (e) {
-    // Display an error message if something unexpected happens.
-    final snackBar = SnackBar(
-      content: Text(
-        'An unexpected error occurred: $e',
-        style: const TextStyle(color: Colors.white),
-      ),
-      duration: const Duration(seconds: 2),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+    try {
+      final result = await authService.login(email, password);
+
+      if (result.containsKey('message') &&
+          result['message'] == 'Login successful') {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('userId', result['user']['_id']);
+        await prefs.setString('jwtToken', result['token']);
+        await prefs.setString('username', result['user']['fullname']);
+        await prefs.setString('email', result['user']['email']);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Login Successful')),
+        );
+        Navigator.pushReplacementNamed(context, '/bot');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(result['message'] ?? 'Unknown error occurred')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('An unexpected error occurred: $e')),
+      );
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    double screenWidth = MediaQuery.of(context).size.width;
+    double paddingValue = screenWidth * 0.1; // Responsive padding
 
-      child: Scaffold(
-        backgroundColor: Color(0xFFDFF3EA),
+    return Scaffold(
+      backgroundColor: Color(0xFFDFF3EA),
+      body: Stack(
+        children: [
+          // Custom Background Circles
+          CustomPaint(
+            size: Size(screenWidth, MediaQuery.of(context).size.height),
+            painter: BlackBackgroundPainter(),
+          ),
 
-
-        body: Stack(
-          children: [
-            Container(),
-            Container(
-              padding:  const EdgeInsets.fromLTRB(40,180,40,30),
-              child: Text(
-                'Login',
-                style: TextStyle(color: Colors.black, fontSize: 40, fontWeight: FontWeight.bold
-                ),
-              ),
-            ),
-            SingleChildScrollView(
-              child: Container(
-                padding:  const EdgeInsets.fromLTRB(40,260,40,0),
-                // padding: EdgeInsets.only(
-                //     top: MediaQuery.of(context).size.height * 0.5),
+          Center(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: paddingValue),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.1),
 
-                      child: Column(
-
-                        children: [
-                          TextField(
-                            style: TextStyle(color: Colors.black),
-                            controller: emailController,
-                            decoration: InputDecoration(
-                              fillColor: Colors.grey.shade100,
-                              filled: true,
-                              hintText: "Email",
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Colors.black, // Set border color
-                                  width: 2.0,         // Set border width
-                                ),
-                                borderRadius: BorderRadius.circular(10), // Set border radius
-                              ),),
-                          ),
-                          SizedBox(
-
-                            height: 30,
-                          ),
-                          TextField(
-                            style: TextStyle(),
-                            obscureText: true,
-                            controller: passwordController,
-                            decoration: InputDecoration(
-                                fillColor: Colors.grey.shade100,
-                                filled: true,
-                                hintText: "Password",
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Colors.black, // Set border color
-                                    width: 2.0,         // Set border width
-                                  ),
-                                  borderRadius: BorderRadius.circular(10),
-                                )),
-                          ),
-                          SizedBox(
-                            height: 40,
-                          ),
-                          CustomPaint(
-                            size: Size(50, 50),
-                            painter: BlackBackgroundPainter(), // The custom painter
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              // Text(
-                              //   'Log in',
-                              //   style: TextStyle(
-                              //       fontSize: 27, fontWeight: FontWeight.w700),
-                              // ),
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(250, 0, 0, 50),
-                                child: CircleAvatar(
-                                  radius: 30,
-                                  backgroundColor: Colors.black,
-                                  child: IconButton(
-                                    color: Colors.white,
-                                    onPressed: login,
-                                    icon: Icon(
-                                      Icons.arrow_forward,
-                                    ),
-                                  ),
-                                ),
-                              )
-
-                            ],
-                          ),
-                          SizedBox(
-                            height: 40,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pushReplacementNamed(context, '/reg');
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.only(top: 40.0), // Apply padding around the text
-                                  child: Text(
-                                    'Sign Up',
-                                    textAlign: TextAlign.left,
-                                    style: TextStyle(
-                                      color: Color(0xFFF3E8E6),
-                                      fontSize: 20,
-                                    ),
-                                  ),
-                                ),
-                                style: ButtonStyle(),
-                              ),
-                              TextButton(
-                                onPressed: () {},
-                                child: Padding(
-                                  padding: const EdgeInsets.only(top: 40.0), // Apply padding around the text
-                                  child: Text(
-                                    'Forgot Password',
-                                    style: TextStyle(
-                                      color: Color(0xFFF3E8E6),
-                                      fontSize: 20,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-
-                          )
-                        ],
+                    // Login Title
+                    Text(
+                      'Login',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: screenWidth * 0.1, // Responsive font size
+                        fontWeight: FontWeight.bold,
                       ),
-                    )
+                    ),
+
+                    SizedBox(height: 40),
+
+                    // Email TextField
+                    TextField(
+                      style: TextStyle(color: Colors.black),
+                      controller: emailController,
+                      decoration: InputDecoration(
+                        fillColor: Colors.grey.shade100,
+                        filled: true,
+                        hintText: "Email",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+
+                    SizedBox(height: 30),
+
+                    // Password TextField
+                    TextField(
+                      obscureText: true,
+                      controller: passwordController,
+                      decoration: InputDecoration(
+                        fillColor: Colors.grey.shade100,
+                        filled: true,
+                        hintText: "Password",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+
+                    SizedBox(height: 40),
+
+                    // Login Button (Circle)
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: CircleAvatar(
+                        radius: 30,
+                        backgroundColor: Colors.black,
+                        child: IconButton(
+                          color: Colors.white,
+                          onPressed: login,
+                          icon: Icon(Icons.arrow_forward),
+                        ),
+                      ),
+                    ),
+
+                    SizedBox(height: 80),
+
+                    // Sign Up & Forgot Password Buttons
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pushReplacementNamed(context, '/reg');
+                          },
+                          child: Text(
+                            'Sign Up',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize:
+                                  screenWidth * 0.05, // Responsive text size
+                            ),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {},
+                          child: Text(
+                            'Forgot Password',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: screenWidth * 0.05,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
-// Create a custom painter class for the black background
+
+// Custom Painter for Circles
 class BlackBackgroundPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint()..color = Colors.black;
 
-    // // Paint a black ellipse
-    // canvas.drawOval(
-    //   Rect.fromLTWH(-175, 0, size.width * 85, size.height * 12),
-    //   paint,
-    // );
-
-    // Paint 3 black circles
+    // Circle 1
     canvas.drawCircle(
-      Offset(-150, 310),  // Circle 1 center
-      120,  // Circle 1 radius
+      Offset(size.width * 0.1, size.height * 0.88), // Adjusted position
+      size.width * 0.33, // Responsive radius
       paint,
     );
 
+    // Circle 2
     canvas.drawCircle(
-      Offset(50, 300),  // Circle 2 center
-      160,  // Circle 2 radius
+      Offset(size.width * 0.5, size.height * 0.90),
+      size.width * 0.44,
       paint,
     );
 
+    // Circle 3
     canvas.drawCircle(
-      Offset(250, 280),  // Circle 3 center
-      125,  // Circle 3 radius
+      Offset(size.width * 0.9, size.height * 0.88),
+      size.width * 0.33,
       paint,
     );
   }
@@ -307,6 +215,3 @@ class BlackBackgroundPainter extends CustomPainter {
     return false;
   }
 }
-
-
-
