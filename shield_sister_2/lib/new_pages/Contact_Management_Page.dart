@@ -1,247 +1,9 @@
-//
-// import 'package:flutter/material.dart';
-// // import 'dart:convert';
-// // import 'package:http/http.dart' as http;
-// import 'package:shield_sister_2/backend/Authentication.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
-//
-// class Contact {
-//   String name;
-//   String phone;
-//
-//   Contact(this.name, this.phone);
-//
-//   Map<String, String> toJson() {
-//     return {
-//       'name': name,
-//       'phone': phone,
-//     };
-//   }
-// }
-//
-// class ContactManagementPage extends StatefulWidget {
-//   @override
-//   _ContactManagementPageState createState() => _ContactManagementPageState();
-// }
-//
-// class _ContactManagementPageState extends State<ContactManagementPage> {
-//   String userId = "";
-//   void getUserData() async {
-//   SharedPreferences prefs = await SharedPreferences.getInstance();
-//   setState(() {
-//     userId = prefs.getString('userId') ?? ""; // Provide a default empty string if 'userId' is null
-//   });
-// }
-//   final List<Contact> contactList = [];
-//   final AuthService authService = AuthService();
-//   final TextEditingController _nameController = TextEditingController();
-//   final TextEditingController _phoneController = TextEditingController();
-//
-//
-//   final String apiUrl = "https://shield-sisters-dep-d4z8-18kdwkmex-rohits-projects-51c777d8.vercel.app/api/sos/savecontacts";
-//    // Replace with your backend URL
-//
-//   void _addContact() async {
-//     String name = _nameController.text.trim();
-//     String phone = _phoneController.text.trim();
-//     SharedPreferences prefs = await SharedPreferences.getInstance();
-//     String userId = prefs.getString('userId') ?? ""; // Provide a default empty string if 'userId' is null
-//
-//
-//     if (name.isNotEmpty && phone.isNotEmpty) {
-//       Contact newContact = Contact(name, phone);
-//
-//       // Send data to backend
-//       bool success = await _sendContactToBackend(userId,newContact);
-//
-//       if (success) {
-//         setState(() {
-//           contactList.add(newContact);
-//         });
-//         _nameController.clear();
-//         _phoneController.clear();
-//         ScaffoldMessenger.of(context).showSnackBar(
-//           SnackBar(content: Text(" Contact successfully added")),
-//         );
-//       } else {
-//         // Show error if contact addition fails
-//         ScaffoldMessenger.of(context).showSnackBar(
-//           SnackBar(content: Text("Failed to add contact")),
-//         );
-//       }
-//     }
-//   }
-//
-//   Future<bool> _sendContactToBackend(String userId, Contact contact) async {
-//      final result = await authService.SaveContact(userId,contact);
-//      print(result);
-//      // print(userId);
-//      if( result['message'] == "Contacts saved successfully!") {
-//        return true;
-//      } else {
-//        return false;
-//      }
-//   }
-//
-//   void _deleteContact(int index) {
-//     setState(() {
-//       contactList.removeAt(index);
-//     });
-//   }
-//
-//   void _editContact(int index) {
-//     _nameController.text = contactList[index].name;
-//     _phoneController.text = contactList[index].phone;
-//
-//     setState(() {
-//       contactList.removeAt(index);
-//     });
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: Colors.white,
-//       appBar: AppBar(
-//         backgroundColor: Colors.blueAccent,
-//         title: Text(
-//           "Contacts List",
-//           style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-//         ),
-//         centerTitle: true,
-//         elevation: 0,
-//       ),
-//       body: Padding(
-//         padding: const EdgeInsets.all(16.0),
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.stretch,
-//           children: [
-//             TextField(
-//               controller: _nameController,
-//               decoration: InputDecoration(
-//                 labelText: "Contact Name",
-//                 border: OutlineInputBorder(
-//                   borderRadius: BorderRadius.circular(12),
-//                 ),
-//                 filled: true,
-//                 fillColor: Colors.grey[100],
-//               ),
-//             ),
-//             SizedBox(height: 10),
-//             TextField(
-//               controller: _phoneController,
-//               decoration: InputDecoration(
-//                 labelText: "Phone Number",
-//                 border: OutlineInputBorder(
-//                   borderRadius: BorderRadius.circular(12),
-//                 ),
-//                 filled: true,
-//                 fillColor: Colors.grey[100],
-//               ),
-//             ),
-//             SizedBox(height: 20),
-//             ElevatedButton(
-//               onPressed: _addContact,
-//               style: ElevatedButton.styleFrom(
-//                 backgroundColor: Colors.green,
-//                 foregroundColor: Colors.white,
-//                 minimumSize: Size(double.infinity, 45),
-//                 shape: RoundedRectangleBorder(
-//                   borderRadius: BorderRadius.circular(12),
-//                 ),
-//               ),
-//               child: Text(
-//                 "Save",
-//                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-//               ),
-//             ),
-//             SizedBox(height: 20),
-//
-//
-//             Expanded(
-//               child: contactList.isEmpty
-//                   ? Center(
-//                 child: Text(
-//                   "No Contact yet...",
-//                   style: TextStyle(
-//                     fontSize: 18,
-//                     fontWeight: FontWeight.w400,
-//                     color: Colors.grey[600],
-//                   ),
-//                 ),
-//               )
-//                   : ListView.builder(
-//                 itemCount: contactList.length,
-//                 itemBuilder: (context, index) {
-//                   return Card(
-//                     elevation: 2,
-//                     margin: EdgeInsets.symmetric(vertical: 8),
-//                     shape: RoundedRectangleBorder(
-//                       borderRadius: BorderRadius.circular(12),
-//                     ),
-//                     child: ListTile(
-//                       leading: CircleAvatar(
-//                         backgroundColor: Colors.deepOrangeAccent,
-//                         foregroundColor: Colors.white,
-//                         child: Text(
-//                           contactList[index].name[0].toUpperCase(),
-//                           style: TextStyle(
-//                             fontWeight: FontWeight.bold,
-//                             fontSize: 20,
-//                           ),
-//                         ),
-//                       ),
-//                       title: Text(
-//                         contactList[index].name,
-//                         style: TextStyle(
-//                             fontSize: 16, fontWeight: FontWeight.bold),
-//                       ),
-//                       subtitle: Text(
-//                         contactList[index].phone,
-//                         style: TextStyle(
-//                             fontSize: 14, color: Colors.grey[700]),
-//                       ),
-//                       trailing: PopupMenuButton<String>(
-//                         onSelected: (value) {
-//                           if (value == 'Edit') {
-//                             _editContact(index);
-//                           } else if (value == 'Delete') {
-//                             _deleteContact(index);
-//                           }
-//                         },
-//                         itemBuilder: (BuildContext context) =>
-//                         <PopupMenuEntry<String>>[
-//                           PopupMenuItem<String>(
-//                             value: 'Edit',
-//                             child: Text('Edit'),
-//                           ),
-//
-//                           PopupMenuItem<String>(
-//                             value: 'Delete',
-//                             child: Text('Delete'),
-//                           ),
-//                         ],
-//                         icon: Icon(Icons.more_vert),
-//                       ),
-//                     ),
-//                   );
-//                 },
-//               ),
-//             ),
-//
-//
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shield_sister_2/backend/Authentication.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mongo_dart/mongo_dart.dart' as mongo;
 
 class Contact {
   String name;
@@ -266,7 +28,7 @@ class ContactManagementPage extends StatefulWidget {
 
 class _ContactManagementPageState extends State<ContactManagementPage> {
   String userId = "";
-  final List<Contact> contactList = [];
+  List<Contact> contactList = [];
   final AuthService authService = AuthService();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
@@ -280,15 +42,50 @@ class _ContactManagementPageState extends State<ContactManagementPage> {
   void _getUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
+      // Ensure userId is stored as a hex string (e.g. "67d6c9f8c18eb9b1663e6641")
       userId = prefs.getString('userId') ?? "";
     });
+    print("User ID (hex string) is: $userId");
+    _fetchContacts();
+  }
+
+  Future<void> _fetchContacts() async {
+    try {
+      final db = await mongo.Db.create(
+        "mongodb+srv://gaznavisheikh01:gazi12345@cluster0.ms5wq.mongodb.net/test?retryWrites=true&w=majority&appName=Cluster0",
+      );
+      await db.open();
+      final collection = db.collection("contacts");
+
+      // Parse the userId hex string into an ObjectId for querying.
+      final userObjectId = mongo.ObjectId.parse(userId);
+      final contacts = await collection.find(mongo.where.eq('userId', userObjectId)).toList();
+      await db.close();
+
+      setState(() {
+        contactList.clear();
+        for (var doc in contacts) {
+          contactList.add(Contact(doc['name'], doc['phone']));
+        }
+      });
+    } catch (e) {
+      print("Error fetching contacts: $e");
+    }
+  }
+
+  Future<bool> _sendContactToBackend(String userId, Contact contact) async {
+    final result = await authService.SaveContact(userId, contact);
+    return result['message'] == "Contacts saved successfully!";
   }
 
   void _addContact() async {
     String name = _nameController.text.trim();
     String phone = _phoneController.text.trim();
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String userId = prefs.getString('userId') ?? "";
+
+    // Automatically prepend "+91 " if not already present.
+    if (!phone.startsWith('+91')) {
+      phone = '+91 ' + phone;
+    }
 
     if (name.isNotEmpty && phone.isNotEmpty) {
       Contact newContact = Contact(name, phone);
@@ -316,15 +113,6 @@ class _ContactManagementPageState extends State<ContactManagementPage> {
     }
   }
 
-  Future<bool> _sendContactToBackend(String userId, Contact contact) async {
-    final result = await authService.SaveContact(userId, contact);
-    if (result['message'] == "Contacts saved successfully!") {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   void _deleteContact(int index) {
     setState(() {
       contactList.removeAt(index);
@@ -332,10 +120,8 @@ class _ContactManagementPageState extends State<ContactManagementPage> {
   }
 
   void _editContact(int index) {
-    // Populate the fields with existing contact data
     _nameController.text = contactList[index].name;
     _phoneController.text = contactList[index].phone;
-    // Remove the contact from the list for editing
     setState(() {
       contactList.removeAt(index);
     });
@@ -350,138 +136,121 @@ class _ContactManagementPageState extends State<ContactManagementPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Wrap with GestureDetector to dismiss keyboard on tap outside
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: Scaffold(
-        resizeToAvoidBottomInset: true,
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.blueAccent,
-          title: Text(
-            "Contacts List",
-            style: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.bold),
+    // Using a SingleChildScrollView wrapped around a Column ensures the page scrolls
+    // even when the keyboard is visible or the list of contacts grows long.
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      appBar: AppBar(
+        backgroundColor: Colors.blueAccent,
+        title: Text("Contacts List", style: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.bold)),
+        centerTitle: true,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _fetchContacts,
           ),
-          centerTitle: true,
-          elevation: 0,
-        ),
-        body: SafeArea(
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Input fields
-                TextField(
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                    labelText: "Contact Name",
-                    labelStyle: GoogleFonts.poppins(),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[100],
-                  ),
+        ],
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Contact Name Input
+              TextField(
+                controller: _nameController,
+                decoration: InputDecoration(
+                  labelText: "Contact Name",
+                  labelStyle: GoogleFonts.poppins(),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  filled: true,
+                  fillColor: Colors.grey[100],
                 ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: _phoneController,
-                  decoration: InputDecoration(
-                    labelText: "Phone Number",
-                    labelStyle: GoogleFonts.poppins(),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[100],
-                  ),
-                  keyboardType: TextInputType.phone,
+              ),
+              const SizedBox(height: 10),
+              // Phone Number Input
+              TextField(
+                controller: _phoneController,
+                decoration: InputDecoration(
+                  labelText: "Phone Number",
+                  labelStyle: GoogleFonts.poppins(),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  filled: true,
+                  fillColor: Colors.grey[100],
                 ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: _addContact,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size(double.infinity, 45),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: Text(
-                    "Save",
-                    style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
+                keyboardType: TextInputType.phone,
+              ),
+              const SizedBox(height: 20),
+              // Save Contact Button
+              ElevatedButton(
+                onPressed: _addContact,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(double.infinity, 45),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                const SizedBox(height: 20),
-                // Contacts List
-                contactList.isEmpty
-                    ? Center(
-                  child: Text(
-                    "No Contact yet...",
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                )
-                    : ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: contactList.length,
-                  itemBuilder: (context, index) {
-                    return Card(
-                      elevation: 2,
-                      margin: const EdgeInsets.symmetric(vertical: 8),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                child: Text("Save", style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold)),
+              ),
+              const SizedBox(height: 20),
+              // Contacts List
+              contactList.isEmpty
+                  ? Center(child: Text("No contacts found", style: GoogleFonts.poppins()))
+                  : ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: contactList.length,
+                itemBuilder: (context, index) {
+                  return Card(
+                    elevation: 2,
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.deepOrangeAccent,
+                        foregroundColor: Colors.white,
+                        child: Text(
+                          contactList[index].name[0].toUpperCase(),
+                          style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 20),
+                        ),
                       ),
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: Colors.deepOrangeAccent,
-                          foregroundColor: Colors.white,
-                          child: Text(
-                            contactList[index].name[0].toUpperCase(),
-                            style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 20),
+                      title: Text(
+                        contactList[index].name,
+                        style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(
+                        contactList[index].phone,
+                        style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[700]),
+                      ),
+                      trailing: PopupMenuButton<String>(
+                        onSelected: (value) {
+                          if (value == 'Edit') {
+                            _editContact(index);
+                          } else if (value == 'Delete') {
+                            _deleteContact(index);
+                          }
+                        },
+                        itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                          PopupMenuItem<String>(
+                            value: 'Edit',
+                            child: Text('Edit', style: GoogleFonts.poppins()),
                           ),
-                        ),
-                        title: Text(
-                          contactList[index].name,
-                          style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Text(
-                          contactList[index].phone,
-                          style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[700]),
-                        ),
-                        trailing: PopupMenuButton<String>(
-                          onSelected: (value) {
-                            if (value == 'Edit') {
-                              _editContact(index);
-                            } else if (value == 'Delete') {
-                              _deleteContact(index);
-                            }
-                          },
-                          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                            PopupMenuItem<String>(
-                              value: 'Edit',
-                              child: Text('Edit', style: GoogleFonts.poppins()),
-                            ),
-                            PopupMenuItem<String>(
-                              value: 'Delete',
-                              child: Text('Delete', style: GoogleFonts.poppins()),
-                            ),
-                          ],
-                          icon: const Icon(Icons.more_vert),
-                        ),
+                          PopupMenuItem<String>(
+                            value: 'Delete',
+                            child: Text('Delete', style: GoogleFonts.poppins()),
+                          ),
+                        ],
+                        icon: const Icon(Icons.more_vert),
                       ),
-                    );
-                  },
-                ),
-              ],
-            ),
+                    ),
+                  );
+                },
+              ),
+              // Extra spacing to ensure the bottom items can be reached when scrolling.
+              const SizedBox(height: 50),
+            ],
           ),
         ),
       ),
