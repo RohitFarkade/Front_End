@@ -430,7 +430,9 @@ class _SOSHomescreenState extends State<SOSHomescreen> {
                       },
                 ),
                 buildActionButton(Icons.notifications_active, "Alert",
-                      (){},
+                      (){
+                  _navigateToMap(context, userId);
+                      },
                 ),
               ],
             ),
