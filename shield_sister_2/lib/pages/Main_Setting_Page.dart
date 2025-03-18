@@ -141,10 +141,10 @@ class _MainSettingPageState extends State<MainSettingPage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              IconButton(
-                                icon: const Icon(Icons.arrow_back, color: Colors.black),
-                                onPressed: () => Navigator.pop(context),
-                              ),
+                              // IconButton(
+                              //   icon: const Icon(Icons.arrow_back, color: Colors.black),
+                              //   onPressed: () => Navigator.pop(context),
+                              // ),
                               IconButton(
                                 icon: const Icon(Icons.settings, color: Colors.black),
                                 onPressed: () {

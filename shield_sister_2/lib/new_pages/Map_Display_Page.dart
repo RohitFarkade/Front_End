@@ -1,3 +1,6 @@
+
+
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
@@ -9,122 +12,25 @@ import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 
 class Landmark {
-  String name;
-  String description;
-  LatLng location;
+  final String name;
+  final String description;
+  final LatLng location;
 
-  Landmark({
+  const Landmark({
     required this.name,
     required this.description,
     required this.location,
   });
 }
 
-// Future<List<Landmark>> fetchLandmarks(LatLng location, String type) async {
-//   const apiKey =
-//       "AIzaSyA19A12lTYYTiysJMcyo0wWq0lG5b5mBXU"; // Replace with your API key
-//
-//   final url =
-//       Uri.parse('https://maps.googleapis.com/maps/api/place/nearbysearch/json?'
-//           'location=${location.latitude},${location.longitude}'
-//           '&radius=1000' // Set radius to 1 km
-//           '&type=$type' // Fetch specified type
-//           '&key=$apiKey');
-//
-//   try {
-//     final response = await http.get(url);
-//
-//     if (response.statusCode == 200) {
-//       final data = jsonDecode(response.body);
-//       final results = data['results'] as List<dynamic>;
-//
-//       return results.map<Landmark>((result) {
-//         final name = result['name'] as String? ?? 'Unknown';
-//         final description =
-//             result['vicinity'] as String? ?? 'No description available';
-//         final location = LatLng(
-//           result['geometry']['location']['lat'] as double? ?? 0.0,
-//           result['geometry']['location']['lng'] as double? ?? 0.0,
-//         );
-//
-//         return Landmark(
-//           name: name,
-//           description: description,
-//           location: location,
-//         );
-//       }).toList();
-//     } else {
-//       throw Exception('Failed to fetch landmarks: ${response.reasonPhrase}');
-//     }
-//   } catch (error) {
-//     print('Error fetching landmarks: $error');
-//     return []; // Return an empty list in case of an error
-//   }
-// }
-
-
-// Future<List<Landmark>> fetchLandmarks(LatLng location, String type) async {
-//   const apiKey = "AIzaSyAnqy5abBsQQIXXzhj8VwiW5zXM3if2zaY"; // Replace with your API key
-//
-//   // final url = Uri.parse('https://maps.googleapis.com/maps/api/place/nearbysearch/json?'
-//   //     'location=${location.latitude},${location.longitude}'
-//   //     '&radius=1000' // Set radius to 1 km
-//   //     '&type=$type' // Fetch specified type
-//   //     '&key=$apiKey');
-//   final url = Uri.parse('https://places.googleapis.com/v1/places/nearbysearch?'
-//       'location=${location.latitude},${location.longitude}'
-//       '&radius=1000'
-//       '&type=$type'
-//       '&key=$apiKey');
-//
-//
-//   try {
-//     final response = await http.get(url);
-//
-//     if (response.statusCode == 200) {
-//       final data = jsonDecode(response.body);
-//       final results = data['results'] as List<dynamic>;
-//
-//       print('API Response: ${response.body}'); // Add this line to debug API response
-//
-//       return results.map<Landmark>((result) {
-//         final name = result['name'] as String? ?? 'Unknown';
-//         final description =
-//             result['vicinity'] as String? ?? 'No description available';
-//         final location = LatLng(
-//           result['geometry']['location']['lat'] as double? ?? 0.0,
-//           result['geometry']['location']['lng'] as double? ?? 0.0,
-//         );
-//
-//         return Landmark(
-//           name: name,
-//           description: description,
-//           location: location,
-//         );
-//       }).toList();
-//     } else {
-//       throw Exception('Failed to fetch landmarks: ${response.reasonPhrase}');
-//     }
-//   } catch (error) {
-//     print('Error fetching landmarks: $error');
-//     return []; // Return an empty list in case of an error
-//   }
-// }
-
 Future<List<Landmark>> fetchLandmarks(LatLng location, String type) async {
-  const apiKey = "AIzaSyAnqy5abBsQQIXXzhj8VwiW5zXM3if2zaY"; // Replace with your actual API key
+  const apiKey = "AIzaSyAnqy5abBsQQIXXzhj8VwiW5zXM3if2zaY"; // Replace with your actual Google Places API key
   final url = Uri.parse("https://places.googleapis.com/v1/places:searchNearby");
 
   final body = jsonEncode({
     "includedTypes": [type],
     "locationRestriction": {
-      "circle": {
-        "center": {
-          "latitude": location.latitude,
-          "longitude": location.longitude
-        },
-        "radius": 1000 // Set radius to 1 km
-      }
+      "circle": {"center": {"latitude": location.latitude, "longitude": location.longitude}, "radius": 1000}
     }
   });
 
@@ -141,28 +47,21 @@ Future<List<Landmark>> fetchLandmarks(LatLng location, String type) async {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      final results = data['places'] as List<dynamic>? ?? [];
-
-      print('API Response: ${response.body}'); // Debug API response
-
-      return results.map<Landmark>((result) {
-        final name = result['displayName']['text'] as String? ?? 'Unknown';
-        final description = result['formattedAddress'] as String? ?? 'No description available';
-        final lat = result['location']['latitude'] as double? ?? 0.0;
-        final lng = result['location']['longitude'] as double? ?? 0.0;
-
+      return (data['places'] as List<dynamic>? ?? []).map<Landmark>((result) {
         return Landmark(
-          name: name,
-          description: description,
-          location: LatLng(lat, lng),
+          name: result['displayName']['text'] as String? ?? 'Unknown',
+          description: result['formattedAddress'] as String? ?? 'No description available',
+          location: LatLng(
+            result['location']['latitude'] as double? ?? 0.0,
+            result['location']['longitude'] as double? ?? 0.0,
+          ),
         );
       }).toList();
-    } else {
-      throw Exception('Failed to fetch landmarks: ${response.reasonPhrase}');
     }
+    throw Exception('Failed to fetch landmarks: ${response.reasonPhrase}');
   } catch (error) {
-    print('Error fetching landmarks: $error');
-    return []; // Return an empty list in case of an error
+    debugPrint('Error fetching landmarks: $error');
+    return const [];
   }
 }
 
@@ -170,275 +69,156 @@ class MapDisplayPage extends StatefulWidget {
   const MapDisplayPage({super.key});
 
   @override
-  _MapDisplayPageState createState() => _MapDisplayPageState();
+  State<MapDisplayPage> createState() => _MapDisplayPageState();
 }
 
 class _MapDisplayPageState extends State<MapDisplayPage> {
-  late GoogleMapController mapController;
-  LatLng _initialPosition = const LatLng(20.5937, 78.9629);
-  LatLng _pastPosition = const LatLng(20.5937, 78.9629);
+  late GoogleMapController _mapController;
+  LatLng _currentPosition = const LatLng(20.5937, 78.9629);
+  LatLng _lastCheckedPosition = const LatLng(20.5937, 78.9629);
   final Set<Circle> _circles = {};
-  final List<Landmark> safeZones =
-      []; // List of safe zones (hospitals and police stations)
-  final List<LatLng> unsafeZoneCenters = []; // List of unsafe zone centers
-  String _zoneStatus = ''; // To display the zone status
-  Set<Polyline> _polylines = {}; // To show directions as polylines
-  bool _showZoneStatus = false; // To control the display of zone status
-  Landmark? _selectedSafeZone; // To store the selected safe zone
-  Color zoneColor = Colors.grey;
-  final ValueNotifier<bool> globalNotifier = ValueNotifier(false);
-
-  bool isCameraMoved = false;
+  final List<Landmark> _safeZones = [];
+  final List<LatLng> _unsafeZoneCenters = [];
+  String _zoneStatus = 'Neutral Zone';
+  Color _zoneColor = Colors.grey;
+  Set<Polyline> _polylines = {};
+  Landmark? _selectedSafeZone;
+  bool _isLoading = false;
+  bool _showZoneStatus = false;
+  Timer? _statusTimer;
 
   @override
   void initState() {
     super.initState();
-    _getUserLocation();
-    _pastPosition = _initialPosition;
+    _initializeMap();
   }
 
-  Future<void> _getUserLocation() async {
-    var status = await Permission.location.request();
-    if (status.isGranted) {
-      Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
-      setState(() {
-        _pastPosition = _initialPosition;
-        _initialPosition = LatLng(position.latitude, position.longitude);
-      });
-      await _updateZones(position); // Update zones based on user location
+  @override
+  void dispose() {
+    _statusTimer?.cancel();
+    _mapController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _initializeMap() async {
+    await _updateUserLocation();
+  }
+
+  Future<void> _updateUserLocation() async {
+    if (await Permission.location.request().isGranted) {
+      setState(() => _isLoading = true);
+      try {
+        final position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+        final newPosition = LatLng(position.latitude, position.longitude);
+        if (_calculateDistance(_lastCheckedPosition, newPosition) > 500 || _circles.isEmpty) {
+          _lastCheckedPosition = _currentPosition;
+          _currentPosition = newPosition;
+          await _updateZones(position);
+          _mapController.animateCamera(CameraUpdate.newLatLng(_currentPosition));
+        }
+      } catch (e) {
+        _showError('Failed to get location: $e');
+      } finally {
+        setState(() => _isLoading = false);
+      }
     } else {
-      print("Location permission denied");
+      _showError('Location permission denied');
     }
   }
 
-  // Future<void> _updateZones(Position position) async {
-  //   LatLng userLocation = LatLng(position.latitude, position.longitude);
-  //   try {
-  //     // Fetch hospitals and police stations
-  //     List<Landmark> hospitals = await fetchLandmarks(userLocation, 'hospital');
-  //     List<Landmark> policeStations =
-  //         await fetchLandmarks(userLocation, 'police');
-  //
-  //     print('Fetched hospitals: ${hospitals.length}');
-  //     print('Fetched police stations: ${policeStations.length}');
-  //
-  //     setState(() async {
-  //       _circles.clear(); // Clear previous circles
-  //       safeZones.clear();
-  //       unsafeZoneCenters.clear();
-  //
-  //       // Add circles for hospitals and police stations (safe zones)
-  //       for (var hospital in hospitals) {
-  //         _circles.add(Circle(
-  //           circleId: CircleId(hospital.name), // Unique ID for the circle
-  //           center: hospital.location,
-  //           radius: 50, // radius in meters
-  //           fillColor: Colors.green.withOpacity(0.5),
-  //           strokeColor: Colors.green,
-  //           strokeWidth: 2,
-  //         ));
-  //         safeZones.add(hospital); // Add to safe zones
-  //       }
-  //
-  //       for (var policeStation in policeStations) {
-  //         _circles.add(Circle(
-  //           circleId: CircleId(policeStation.name), // Unique ID for the circle
-  //           center: policeStation.location,
-  //           radius: 50, // radius in meters
-  //           fillColor: Colors.green.withOpacity(0.5),
-  //           strokeColor: Colors.green,
-  //           strokeWidth: 2,
-  //         ));
-  //         safeZones.add(policeStation); // Add to safe zones
-  //       }
-  //
-  //       // Fetch liquor stores and bars (unsafe zones)
-  //       List<Landmark> liquorStores =
-  //           await fetchLandmarks(userLocation, 'liquor_store');
-  //       List<Landmark> bars = await fetchLandmarks(userLocation, 'bar');
-  //
-  //       print('Fetched liquor stores: ${liquorStores.length}');
-  //       print('Fetched bars: ${bars.length}');
-  //
-  //       // Add circles for liquor stores and bars (unsafe zones)
-  //       for (var liquorStore in liquorStores) {
-  //         _circles.add(Circle(
-  //           circleId: CircleId(liquorStore.name), // Unique ID for the circle
-  //           center: liquorStore.location,
-  //           radius: 50, // radius in meters
-  //           fillColor: Colors.red.withOpacity(0.5),
-  //           strokeColor: Colors.red,
-  //           strokeWidth: 2,
-  //         ));
-  //         unsafeZoneCenters.add(liquorStore.location); // Add to unsafe zones
-  //       }
-  //
-  //       for (var bar in bars) {
-  //         _circles.add(Circle(
-  //           circleId: CircleId(bar.name), // Unique ID for the circle
-  //           center: bar.location,
-  //           radius: 50, // radius in meters
-  //           fillColor: Colors.red.withOpacity(0.5),
-  //           strokeColor: Colors.red,
-  //           strokeWidth: 2,
-  //         ));
-  //         unsafeZoneCenters.add(bar.location); // Add to unsafe zones
-  //       }
-  //
-  //       _checkUserZone(
-  //           userLocation); // Check if user is in a safe or unsafe zone
-  //     });
-  //   } catch (e) {
-  //     print('Error updating zones: $e');
-  //   }
-  // }
   Future<void> _updateZones(Position position) async {
-    LatLng userLocation = LatLng(position.latitude, position.longitude);
+    final userLocation = LatLng(position.latitude, position.longitude);
     try {
-      // Fetch hospitals and police stations
-      List<Landmark> hospitals = await fetchLandmarks(userLocation, 'hospital');
-      List<Landmark> policeStations = await fetchLandmarks(userLocation, 'police');
+      final futures = [
+        fetchLandmarks(userLocation, 'hospital'),
+        fetchLandmarks(userLocation, 'police'),
+        fetchLandmarks(userLocation, 'liquor_store'),
+        fetchLandmarks(userLocation, 'bar'),
+      ];
+      final results = await Future.wait(futures);
 
-      print('Fetched hospitals: ${hospitals.length}');
-      print('Fetched police stations: ${policeStations.length}');
-
-      // Fetch liquor stores and bars (unsafe zones)
-      List<Landmark> liquorStores = await fetchLandmarks(userLocation, 'liquor_store');
-      List<Landmark> bars = await fetchLandmarks(userLocation, 'bar');
-
-      print('Fetched liquor stores: ${liquorStores.length}');
-      print('Fetched bars: ${bars.length}');
+      final hospitals = results[0];
+      final policeStations = results[1];
+      final liquorStores = results[2];
+      final bars = results[3];
 
       setState(() {
-        _circles.clear(); // Clear previous circles
-        safeZones.clear();
-        unsafeZoneCenters.clear();
+        _circles.clear();
+        _safeZones.clear();
+        _unsafeZoneCenters.clear();
 
-        // Add circles for hospitals and police stations (safe zones)
-        for (var hospital in hospitals) {
-          _circles.add(Circle(
-            circleId: CircleId(hospital.name), // Unique ID for the circle
-            center: hospital.location,
-            radius: 50, // radius in meters
-            fillColor: Colors.green.withOpacity(0.5),
-            strokeColor: Colors.green,
-            strokeWidth: 2,
-          ));
-          safeZones.add(hospital); // Add to safe zones
-        }
+        _addCircles(hospitals, Colors.green, _safeZones);
+        _addCircles(policeStations, Colors.green, _safeZones);
+        _addCircles(liquorStores, Colors.red, null, _unsafeZoneCenters);
+        _addCircles(bars, Colors.red, null, _unsafeZoneCenters);
 
-        for (var policeStation in policeStations) {
-          _circles.add(Circle(
-            circleId: CircleId(policeStation.name), // Unique ID for the circle
-            center: policeStation.location,
-            radius: 50, // radius in meters
-            fillColor: Colors.green.withOpacity(0.5),
-            strokeColor: Colors.green,
-            strokeWidth: 2,
-          ));
-          safeZones.add(policeStation); // Add to safe zones
-        }
-
-        // Add circles for liquor stores and bars (unsafe zones)
-        for (var liquorStore in liquorStores) {
-          _circles.add(Circle(
-            circleId: CircleId(liquorStore.name), // Unique ID for the circle
-            center: liquorStore.location,
-            radius: 50, // radius in meters
-            fillColor: Colors.red.withOpacity(0.5),
-            strokeColor: Colors.red,
-            strokeWidth: 2,
-          ));
-          unsafeZoneCenters.add(liquorStore.location); // Add to unsafe zones
-        }
-
-        for (var bar in bars) {
-          _circles.add(Circle(
-            circleId: CircleId(bar.name), // Unique ID for the circle
-            center: bar.location,
-            radius: 50, // radius in meters
-            fillColor: Colors.red.withOpacity(0.5),
-            strokeColor: Colors.red,
-            strokeWidth: 2,
-          ));
-          unsafeZoneCenters.add(bar.location); // Add to unsafe zones
-        }
-
-        _checkUserZone(userLocation); // Check if user is in a safe or unsafe zone
+        _checkUserZone(userLocation);
       });
     } catch (e) {
-      print('Error updating zones: $e');
+      _showError('Error updating zones: $e');
     }
   }
-  void _checkUserZone(LatLng userLocation) {
-    bool inSafeZone = safeZones.any((zone) {
-      return _calculateDistance(userLocation, zone.location) <= 50; // 50 meters
-    });
 
-    bool inUnsafeZone = unsafeZoneCenters.any((center) {
-      return _calculateDistance(userLocation, center) <= 50; // 50 meters
-    });
+  void _addCircles(List<Landmark> landmarks, Color color, List<Landmark>? zones, [List<LatLng>? centers]) {
+    for (var landmark in landmarks) {
+      _circles.add(Circle(
+        circleId: CircleId(landmark.name),
+        center: landmark.location,
+        radius: 50,
+        fillColor: color.withOpacity(0.5),
+        strokeColor: color,
+        strokeWidth: 2,
+      ));
+      zones?.add(landmark);
+      centers?.add(landmark.location);
+    }
+  }
+
+  void _checkUserZone(LatLng userLocation) {
+    final inSafeZone = _safeZones.any((zone) => _calculateDistance(userLocation, zone.location) <= 50);
+    final inUnsafeZone = _unsafeZoneCenters.any((center) => _calculateDistance(userLocation, center) <= 50);
 
     setState(() {
       if (inSafeZone && inUnsafeZone) {
-        // If the user is in both zones
-        _zoneStatus =
-            'You are in both a safe zone and an unsafe zone (Yellow Zone)';
-        zoneColor = Colors.yellow;
+        _zoneStatus = 'Mixed Zone';
+        _zoneColor = Colors.yellow;
       } else if (inSafeZone) {
-        // If the user is only in a safe zone
-        _zoneStatus = 'You are in a safe zone (Green Zone)';
-        zoneColor = Colors.green;
+        _zoneStatus = 'Safe Zone';
+        _zoneColor = Colors.green;
       } else if (inUnsafeZone) {
-        // If the user is only in an unsafe zone
-        _zoneStatus = 'You are in an unsafe zone (Red Zone)';
-        zoneColor = Colors.red;
+        _zoneStatus = 'Unsafe Zone';
+        _zoneColor = Colors.red;
       } else {
-        // If the user is in neither zone
-        _zoneStatus = 'You are in a neutral zone';
-        zoneColor = Colors.grey;
+        _zoneStatus = 'Neutral Zone';
+        _zoneColor = Colors.grey;
       }
     });
   }
 
   double _calculateDistance(LatLng loc1, LatLng loc2) {
-    const double earthRadius = 6371000; // meters
-    double dLat = _degreesToRadians(loc2.latitude - loc1.latitude);
-    double dLon = _degreesToRadians(loc2.longitude - loc1.longitude);
-    double a = sin(dLat / 2) * sin(dLat / 2) +
-        cos(_degreesToRadians(loc1.latitude)) *
-            cos(_degreesToRadians(loc2.latitude)) *
-            sin(dLon / 2) *
-            sin(dLon / 2);
-    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
-    return earthRadius * c; // Distance in meters
+    const double earthRadius = 6371000;
+    final dLat = _degreesToRadians(loc2.latitude - loc1.latitude);
+    final dLon = _degreesToRadians(loc2.longitude - loc1.longitude);
+    final a = sin(dLat / 2) * sin(dLat / 2) +
+        cos(_degreesToRadians(loc1.latitude)) * cos(_degreesToRadians(loc2.latitude)) * sin(dLon / 2) * sin(dLon / 2);
+    return earthRadius * 2 * atan2(sqrt(a), sqrt(1 - a));
   }
 
-  double _degreesToRadians(double degrees) {
-    return degrees * (pi / 180);
-  }
+  double _degreesToRadians(double degrees) => degrees * (pi / 180);
 
-  Future<List<LatLng>> getDirections(LatLng origin, LatLng destination) async {
-    const apiKey = "AIzaSyAnqy5abBsQQIXXzhj8VwiW5zXM3if2zaY"; // Replace with your actual API key
+  Future<List<LatLng>> _getDirections(LatLng origin, LatLng destination) async {
+    const apiKey = "AIzaSyAnqy5abBsQQIXXzhj8VwiW5zXM3if2zaY"; // Replace with your actual Google Routes API key
     final url = Uri.parse("https://routes.googleapis.com/directions/v2:computeRoutes");
 
     final body = jsonEncode({
-      "origin": {
-        "location": {
-          "latLng": {"latitude": origin.latitude, "longitude": origin.longitude}
-        }
-      },
-      "destination": {
-        "location": {
-          "latLng": {"latitude": destination.latitude, "longitude": destination.longitude}
-        }
-      },
+      "origin": {"location": {"latLng": {"latitude": origin.latitude, "longitude": origin.longitude}}},
+      "destination": {"location": {"latLng": {"latitude": destination.latitude, "longitude": destination.longitude}}},
       "travelMode": "DRIVE",
       "routingPreference": "TRAFFIC_AWARE"
     });
 
     try {
+      setState(() => _isLoading = true);
       final response = await http.post(
         url,
         headers: {
@@ -452,325 +232,253 @@ class _MapDisplayPageState extends State<MapDisplayPage> {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final routes = data['routes'] as List<dynamic>? ?? [];
-
         if (routes.isNotEmpty) {
-          final polyline = routes[0]['polyline']['encodedPolyline'];
-          return decodePolyline(polyline);
-        } else {
-          throw 'No route found';
+          return _decodePolyline(routes[0]['polyline']['encodedPolyline']);
         }
-      } else {
-        throw 'Failed to load directions: ${response.reasonPhrase}';
+        throw 'No route found';
       }
+      throw 'Failed to load directions: ${response.reasonPhrase}';
     } catch (error) {
-      print('Error fetching directions: $error');
-      return [];
+      _showError('Error fetching directions: $error');
+      return const [];
+    } finally {
+      setState(() => _isLoading = false);
     }
   }
 
-// Function to decode polyline
-  List<LatLng> decodePolyline(String polyline) {
-    List<LatLng> points = [];
-    int index = 0, len = polyline.length;
-    int lat = 0, lng = 0;
+  List<LatLng> _decodePolyline(String polyline) {
+    final points = <LatLng>[];
+    int index = 0, lat = 0, lng = 0;
 
-    while (index < len) {
-      int shift = 0, result = 0;
-      int byte;
+    while (index < polyline.length) {
+      int byte, shift = 0, result = 0;
+
+      // Decode latitude
       do {
         byte = polyline.codeUnitAt(index++) - 63;
         result |= (byte & 0x1F) << shift;
         shift += 5;
-      } while (byte >= 0x20);
-      int deltaLat = ((result & 1) == 1 ? ~(result >> 1) : (result >> 1));
-      lat += deltaLat;
+      } while (byte >= 0x20 && index < polyline.length);
+      lat += (result & 1) == 1 ? ~(result >> 1) : (result >> 1);
 
       shift = 0;
       result = 0;
+
+      // Decode longitude
       do {
         byte = polyline.codeUnitAt(index++) - 63;
         result |= (byte & 0x1F) << shift;
         shift += 5;
-      } while (byte >= 0x20);
-      int deltaLng = ((result & 1) == 1 ? ~(result >> 1) : (result >> 1));
-      lng += deltaLng;
+      } while (byte >= 0x20 && index < polyline.length);
+      lng += (result & 1) == 1 ? ~(result >> 1) : (result >> 1);
 
       points.add(LatLng(lat / 1E5, lng / 1E5));
     }
     return points;
   }
 
-  // List<LatLng> decodePolyline(String polyline) {
-  //   List<LatLng> points = [];
-  //   int index = 0;
-  //   int len = polyline.length;
-  //   int lat = 0;
-  //   int lng = 0;
-  //
-  //   while (index < len) {
-  //     int result = 0;
-  //     int shift = 0;
-  //     int byte;
-  //     do {
-  //       byte = polyline.codeUnitAt(index++) - 63;
-  //       result |= (byte & 0x1f) << shift;
-  //       shift += 5;
-  //     } while (byte >= 0x20);
-  //     int dLat = (result & 1) != 0 ? ~(result >> 1) : result >> 1;
-  //     lat += dLat;
-  //
-  //     result = 0;
-  //     shift = 0;
-  //     do {
-  //       byte = polyline.codeUnitAt(index++) - 63;
-  //       result |= (byte & 0x1f) << shift;
-  //       shift += 5;
-  //     } while (byte >= 0x20);
-  //     int dLng = (result & 1) != 0 ? ~(result >> 1) : result >> 1;
-  //     lng += dLng;
-  //
-  //     points.add(LatLng(lat / 1E5, lng / 1E5));
-  //   }
-  //
-  //   return points;
-  // }
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message, style: GoogleFonts.poppins()),
+        backgroundColor: Colors.black87,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Map'),
-      ),
-      body: Stack(
-        children: [
-          GoogleMap(
-            onMapCreated: (controller) {
-              mapController = controller;
-            },
-            initialCameraPosition: CameraPosition(
-              target: _initialPosition,
-              zoom: 14.0,
-            ),
-            circles: _circles,
-            polylines: _polylines,
-            myLocationEnabled: true,
-            myLocationButtonEnabled: true,
-            onCameraIdle: () => {_getUserLocation()},
-            onCameraMove: (camera_position) => {
-              if (_calculateDistance(_pastPosition, _initialPosition) > 500)
-                {_getUserLocation(), _polylines.clear()}
-            },
-            padding: const EdgeInsets.only(
-                bottom: 150), // Leave space for bottom buttons
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Colors.white, Colors.grey.shade100],
           ),
-          Positioned(
-            left: 16,
-            right: 16,
-            bottom: 16, // Position above the bottom navigation bar
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 4,
-                    offset: Offset(0, 2),
-                  ),
-                ],
+        ),
+        child: SafeArea(
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: GoogleMap(
+                  onMapCreated: (controller) => _mapController = controller,
+                  initialCameraPosition: CameraPosition(target: _currentPosition, zoom: 14.0),
+                  circles: _circles,
+                  polylines: _polylines,
+                  myLocationEnabled: true,
+                  myLocationButtonEnabled: true,
+                  onCameraIdle: _updateUserLocation,
+                  padding: const EdgeInsets.only(bottom: 200),
+                ),
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+              Positioned(
+                top: 16,
+                left: 16,
+                right: 16,
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.95),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(color: Colors.grey.withOpacity(0.3), blurRadius: 12, offset: const Offset(0, 4)),
+                    ],
+                  ),
+                  child: Row(
                     children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          _showZoneStatus = !_showZoneStatus;
-                          if (_showZoneStatus) {
-                            Timer(Duration(seconds: 3), () {
-                              setState(() {
-                                _showZoneStatus = !_showZoneStatus;
-                              });
-                            });
-                          }
-                          _checkUserZone(
-                              _initialPosition); // Check if the user is in a safe or unsafe zone
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: zoneColor, // Button color
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 12),
-                        ),
-                        child: const Icon(
-                          Icons.security,
-                          color: Colors.white,
-                          size: 24,
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () async {
-                          // Show directions to the selected safe zone
-                          if (_selectedSafeZone != null) {
-                            List<LatLng> route = await getDirections(
-                                _initialPosition, _selectedSafeZone!.location);
-                            setState(() {
-                              _polylines.clear();
-                              _polylines.add(Polyline(
-                                polylineId: PolylineId('route'),
-                                points: route,
-                                color: Colors.blue,
-                                width: 5,
-                              ));
-                            });
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue, // Button color
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 12),
-                        ),
-                        child: const Icon(
-                          Icons.directions,
-                          color: Colors.white,
-                          size: 24,
+                      // IconButton(
+                      //   icon: const Icon(Icons.arrow_back, color: Colors.black),
+                      //   onPressed: () => Navigator.pop(context),
+                      // ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          "Safety Map",
+                          style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
-                  DropdownButton<Landmark>(
-                    hint: const Text("Select Safe Zone"),
-                    value: safeZones.contains(_selectedSafeZone)
-                        ? _selectedSafeZone
-                        : null,
-                    onChanged: (Landmark? newValue) {
-                      setState(() {
-                        _selectedSafeZone = newValue;
-                      });
-                    },
-                    items: safeZones.isNotEmpty
-                        ? safeZones.map((Landmark zone) {
-                            return DropdownMenuItem<Landmark>(
-                              value: zone,
-                              child: SizedBox(
-                                width: MediaQuery.of(context).size.width *
-                                    0.7, // Adjust the width as needed
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Wrap(
-                                        children: [
-                                          Text(
-                                            zone.name,
-                                            style: GoogleFonts.nunito(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                            overflow: TextOverflow
-                                                .ellipsis, // Prevent text overflow
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Text(
-                                      '${(_calculateDistance(zone.location, _initialPosition) / 1000).toStringAsFixed(2)}km',
-                                      style: GoogleFonts.nunito(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            );
-                          }).toList()
-                        : [
-                            DropdownMenuItem<Landmark>(
-                              enabled: false,
-                              value: Landmark(
-                                  name: "No Safe Zones Nearby",
-                                  description: "",
-                                  location: _initialPosition),
-                              child: Text("No Safe Zones"),
-                            ),
-                          ],
-                  ),
-                  // DropdownButton<Landmark>(
-                  //   hint: const Text("Select Safe Zone"),
-                  //   value: _selectedSafeZone,
-                  //   onChanged: (Landmark? newValue) {
-                  //     setState(() {
-                  //       _selectedSafeZone = newValue;
-                  //     });
-                  //   },
-                  //   items: safeZones.isNotEmpty
-                  //   ?safeZones.map((Landmark zone) {
-                  //     return DropdownMenuItem<Landmark>(
-                  //       value: zone,
-                  //       child: SizedBox(
-                  //           width: MediaQuery.of(context).size.width *
-                  //               0.7, // Adjust the width as needed
-                  //           child: Row(
-                  //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //             children: [
-                  //               Expanded(
-                  //                 child: Wrap(
-                  //                   children: [
-                  //                     Text(
-                  //                       zone.name,
-                  //                       style: GoogleFonts.nunito(
-                  //                         fontSize: 18,
-                  //                         fontWeight: FontWeight.w500,
-                  //                       ),
-                  //                       overflow: TextOverflow
-                  //                           .ellipsis, // Prevent text overflow
-                  //                     ),
-                  //                   ],
-                  //                 ),
-                  //               ),
-                  //               Text(
-                  //                 '${(_calculateDistance(zone.location, _initialPosition) / 1000).toStringAsFixed(2)}km',
-                  //                 style: GoogleFonts.nunito(
-                  //                   fontSize: 20,
-                  //                   fontWeight: FontWeight.bold,
-                  //                 ),
-                  //               )
-                  //             ],
-                  //           )),
-                  //     );
-                  //   }).toList()
-                  //   : [
-                  //     DropdownMenuItem<Landmark>(
-                  //       enabled: false,
-                  //       value: Landmark(name: "No Safe Zones Nearby", description: "", location: _initialPosition),
-                  //       child: Text("No Safe Zones"),
-                  //     ),
-                  //     ]
-                  // ),
-                  // if (_showZoneStatus)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 16),
-                    child: Text(
-                      _zoneStatus,
-                      style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
+              Positioned(
+                left: 16,
+                right: 16,
+                bottom: 16,
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(color: Colors.grey.withOpacity(0.3), blurRadius: 12, offset: const Offset(0, 4)),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          _buildButton(
+                            icon: Icons.security,
+                            text: "Check Zone",
+                            onPressed: () {
+                              _showZoneStatus = true;
+                              _checkUserZone(_currentPosition);
+                              _statusTimer?.cancel();
+                              _statusTimer = Timer(const Duration(seconds: 3), () => setState(() => _showZoneStatus = false));
+                            },
+                          ),
+                          _buildButton(
+                            icon: Icons.directions,
+                            text: "Get Directions",
+                            onPressed: _selectedSafeZone == null
+                                ? null
+                                : () async {
+                              final route = await _getDirections(_currentPosition, _selectedSafeZone!.location);
+                              setState(() {
+                                _polylines = {
+                                  Polyline(polylineId: const PolylineId('route'), points: route, color: Colors.black, width: 5)
+                                };
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      DropdownButton<Landmark>(
+                        isExpanded: true,
+                        hint: Text("Select Safe Zone", style: GoogleFonts.poppins(color: Colors.grey.shade700)),
+                        value: _selectedSafeZone,
+                        onChanged: _isLoading ? null : (value) => setState(() => _selectedSafeZone = value),
+                        items: _safeZones.isEmpty
+                            ? [
+                          DropdownMenuItem<Landmark>(
+                            enabled: false,
+                            child: Text("No Safe Zones", style: GoogleFonts.poppins(color: Colors.grey)),
+                          )
+                        ]
+                            : _safeZones.map((zone) {
+                          return DropdownMenuItem<Landmark>(
+                            value: zone,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    zone.name,
+                                    style: GoogleFonts.poppins(fontSize: 16, color: Colors.black),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Text(
+                                  '${(_calculateDistance(zone.location, _currentPosition) / 1000).toStringAsFixed(2)} km',
+                                  style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                      if (_showZoneStatus)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 20,
+                                height: 20,
+                                decoration: BoxDecoration(color: _zoneColor, shape: BoxShape.circle),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                _zoneStatus,
+                                style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+              if (_isLoading)
+                Center(
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.7),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(Colors.white)),
+                  ),
+                ),
+            ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildButton({required IconData icon, required String text, required VoidCallback? onPressed}) {
+    return ElevatedButton(
+      onPressed: _isLoading ? null : onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.black,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        elevation: 8,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: Colors.white),
+          const SizedBox(width: 8),
+          Text(text, style: GoogleFonts.poppins(color: Colors.white, fontSize: 14)),
         ],
       ),
     );
@@ -778,7 +486,5 @@ class _MapDisplayPageState extends State<MapDisplayPage> {
 }
 
 void main() {
-  runApp(const MaterialApp(
-    home: MapDisplayPage(),
-  ));
+  runApp(const MaterialApp(home: MapDisplayPage()));
 }
