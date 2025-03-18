@@ -1,18 +1,18 @@
+import 'dart:async';
 import 'dart:math';
 import 'package:geolocator/geolocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LocationService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  Timer? _locationUpdateTimer;
 
-  // Generate a random tracking ID (6-character string)
   String generateTrackingId() {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     final random = Random();
     return List.generate(6, (index) => chars[random.nextInt(chars.length)]).join();
   }
 
-  // Request location permissions
   Future<Position> _determinePosition() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) throw 'Location services are disabled';
@@ -26,7 +26,6 @@ class LocationService {
     return await Geolocator.getCurrentPosition();
   }
 
-  // Start sharing location (creates a Firestore entry)
   Future<String> startSharing() async {
     String trackingId = generateTrackingId();
     Position position = await _determinePosition();
@@ -37,21 +36,29 @@ class LocationService {
       'timestamp': FieldValue.serverTimestamp(),
     });
 
+    // Start periodic updates every 10 seconds (adjust as needed)
+    _locationUpdateTimer = Timer.periodic(Duration(seconds: 10), (timer) {
+      updateLiveLocation(trackingId);
+    });
+
     return trackingId;
   }
 
-  // Update live location periodically
   Future<void> updateLiveLocation(String trackingId) async {
-    Position position = await _determinePosition();
-    await _firestore.collection('live_locations').doc(trackingId).update({
-      'latitude': position.latitude,
-      'longitude': position.longitude,
-      'timestamp': FieldValue.serverTimestamp(),
-    });
+    try {
+      Position position = await _determinePosition();
+      await _firestore.collection('live_locations').doc(trackingId).update({
+        'latitude': position.latitude,
+        'longitude': position.longitude,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      print('Error updating location: $e');
+    }
   }
 
-  // Stop sharing (deletes Firestore entry)
   Future<void> stopSharing(String trackingId) async {
+    _locationUpdateTimer?.cancel();
     await _firestore.collection('live_locations').doc(trackingId).delete();
   }
 }
