@@ -6,8 +6,8 @@
         android:label="shield_sister_2"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
-<!--        <meta-data android:name="com.google.android.geo.API_KEY"-->
-<!--            android:value="AIzaSyBOQVoXhw3B9sGlfpiOJNzqYng59AYRtUM"/>-->
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBVIuWqktZ62jnDXTQKQlbciNMX6dXezlE"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

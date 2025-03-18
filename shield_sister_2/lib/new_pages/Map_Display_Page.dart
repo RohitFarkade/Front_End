@@ -22,7 +22,7 @@ class Landmark {
 
 Future<List<Landmark>> fetchLandmarks(LatLng location, String type) async {
   const apiKey =
-      "AIzaSyBOQVoXhw3B9sGlfpiOJNzqYng59AYRtUM"; // Replace with your API key
+      "AIzaSyBVIuWqktZ62jnDXTQKQlbciNMX6dXezlE"; // Replace with your API key
 
   final url =
       Uri.parse('https://maps.googleapis.com/maps/api/place/nearbysearch/json?'
@@ -242,7 +242,7 @@ class _MapDisplayPageState extends State<MapDisplayPage> {
     final url = Uri.parse('https://maps.googleapis.com/maps/api/directions/json'
         '?origin=${origin.latitude},${origin.longitude}'
         '&destination=${destination.latitude},${destination.longitude}'
-        '&key=AIzaSyBOQVoXhw3B9sGlfpiOJNzqYng59AYRtUM' // Replace with your API key
+        '&key=AIzaSyBVIuWqktZ62jnDXTQKQlbciNMX6dXezlE' // Replace with your API key
         );
 
     final response = await http.get(url);
