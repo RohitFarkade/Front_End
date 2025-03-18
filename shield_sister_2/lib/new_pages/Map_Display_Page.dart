@@ -20,37 +20,141 @@ class Landmark {
   });
 }
 
-Future<List<Landmark>> fetchLandmarks(LatLng location, String type) async {
-  const apiKey =
-      "AIzaSyBVIuWqktZ62jnDXTQKQlbciNMX6dXezlE"; // Replace with your API key
+// Future<List<Landmark>> fetchLandmarks(LatLng location, String type) async {
+//   const apiKey =
+//       "AIzaSyA19A12lTYYTiysJMcyo0wWq0lG5b5mBXU"; // Replace with your API key
+//
+//   final url =
+//       Uri.parse('https://maps.googleapis.com/maps/api/place/nearbysearch/json?'
+//           'location=${location.latitude},${location.longitude}'
+//           '&radius=1000' // Set radius to 1 km
+//           '&type=$type' // Fetch specified type
+//           '&key=$apiKey');
+//
+//   try {
+//     final response = await http.get(url);
+//
+//     if (response.statusCode == 200) {
+//       final data = jsonDecode(response.body);
+//       final results = data['results'] as List<dynamic>;
+//
+//       return results.map<Landmark>((result) {
+//         final name = result['name'] as String? ?? 'Unknown';
+//         final description =
+//             result['vicinity'] as String? ?? 'No description available';
+//         final location = LatLng(
+//           result['geometry']['location']['lat'] as double? ?? 0.0,
+//           result['geometry']['location']['lng'] as double? ?? 0.0,
+//         );
+//
+//         return Landmark(
+//           name: name,
+//           description: description,
+//           location: location,
+//         );
+//       }).toList();
+//     } else {
+//       throw Exception('Failed to fetch landmarks: ${response.reasonPhrase}');
+//     }
+//   } catch (error) {
+//     print('Error fetching landmarks: $error');
+//     return []; // Return an empty list in case of an error
+//   }
+// }
 
-  final url =
-      Uri.parse('https://maps.googleapis.com/maps/api/place/nearbysearch/json?'
-          'location=${location.latitude},${location.longitude}'
-          '&radius=1000' // Set radius to 1 km
-          '&type=$type' // Fetch specified type
-          '&key=$apiKey');
+
+// Future<List<Landmark>> fetchLandmarks(LatLng location, String type) async {
+//   const apiKey = "AIzaSyAnqy5abBsQQIXXzhj8VwiW5zXM3if2zaY"; // Replace with your API key
+//
+//   // final url = Uri.parse('https://maps.googleapis.com/maps/api/place/nearbysearch/json?'
+//   //     'location=${location.latitude},${location.longitude}'
+//   //     '&radius=1000' // Set radius to 1 km
+//   //     '&type=$type' // Fetch specified type
+//   //     '&key=$apiKey');
+//   final url = Uri.parse('https://places.googleapis.com/v1/places/nearbysearch?'
+//       'location=${location.latitude},${location.longitude}'
+//       '&radius=1000'
+//       '&type=$type'
+//       '&key=$apiKey');
+//
+//
+//   try {
+//     final response = await http.get(url);
+//
+//     if (response.statusCode == 200) {
+//       final data = jsonDecode(response.body);
+//       final results = data['results'] as List<dynamic>;
+//
+//       print('API Response: ${response.body}'); // Add this line to debug API response
+//
+//       return results.map<Landmark>((result) {
+//         final name = result['name'] as String? ?? 'Unknown';
+//         final description =
+//             result['vicinity'] as String? ?? 'No description available';
+//         final location = LatLng(
+//           result['geometry']['location']['lat'] as double? ?? 0.0,
+//           result['geometry']['location']['lng'] as double? ?? 0.0,
+//         );
+//
+//         return Landmark(
+//           name: name,
+//           description: description,
+//           location: location,
+//         );
+//       }).toList();
+//     } else {
+//       throw Exception('Failed to fetch landmarks: ${response.reasonPhrase}');
+//     }
+//   } catch (error) {
+//     print('Error fetching landmarks: $error');
+//     return []; // Return an empty list in case of an error
+//   }
+// }
+
+Future<List<Landmark>> fetchLandmarks(LatLng location, String type) async {
+  const apiKey = "AIzaSyAnqy5abBsQQIXXzhj8VwiW5zXM3if2zaY"; // Replace with your actual API key
+  final url = Uri.parse("https://places.googleapis.com/v1/places:searchNearby");
+
+  final body = jsonEncode({
+    "includedTypes": [type],
+    "locationRestriction": {
+      "circle": {
+        "center": {
+          "latitude": location.latitude,
+          "longitude": location.longitude
+        },
+        "radius": 1000 // Set radius to 1 km
+      }
+    }
+  });
 
   try {
-    final response = await http.get(url);
+    final response = await http.post(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+        "X-Goog-Api-Key": apiKey,
+        "X-Goog-FieldMask": "places.displayName,places.formattedAddress,places.location"
+      },
+      body: body,
+    );
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      final results = data['results'] as List<dynamic>;
+      final results = data['places'] as List<dynamic>? ?? [];
+
+      print('API Response: ${response.body}'); // Debug API response
 
       return results.map<Landmark>((result) {
-        final name = result['name'] as String? ?? 'Unknown';
-        final description =
-            result['vicinity'] as String? ?? 'No description available';
-        final location = LatLng(
-          result['geometry']['location']['lat'] as double? ?? 0.0,
-          result['geometry']['location']['lng'] as double? ?? 0.0,
-        );
+        final name = result['displayName']['text'] as String? ?? 'Unknown';
+        final description = result['formattedAddress'] as String? ?? 'No description available';
+        final lat = result['location']['latitude'] as double? ?? 0.0;
+        final lng = result['location']['longitude'] as double? ?? 0.0;
 
         return Landmark(
           name: name,
           description: description,
-          location: location,
+          location: LatLng(lat, lng),
         );
       }).toList();
     } else {
@@ -108,18 +212,105 @@ class _MapDisplayPageState extends State<MapDisplayPage> {
     }
   }
 
+  // Future<void> _updateZones(Position position) async {
+  //   LatLng userLocation = LatLng(position.latitude, position.longitude);
+  //   try {
+  //     // Fetch hospitals and police stations
+  //     List<Landmark> hospitals = await fetchLandmarks(userLocation, 'hospital');
+  //     List<Landmark> policeStations =
+  //         await fetchLandmarks(userLocation, 'police');
+  //
+  //     print('Fetched hospitals: ${hospitals.length}');
+  //     print('Fetched police stations: ${policeStations.length}');
+  //
+  //     setState(() async {
+  //       _circles.clear(); // Clear previous circles
+  //       safeZones.clear();
+  //       unsafeZoneCenters.clear();
+  //
+  //       // Add circles for hospitals and police stations (safe zones)
+  //       for (var hospital in hospitals) {
+  //         _circles.add(Circle(
+  //           circleId: CircleId(hospital.name), // Unique ID for the circle
+  //           center: hospital.location,
+  //           radius: 50, // radius in meters
+  //           fillColor: Colors.green.withOpacity(0.5),
+  //           strokeColor: Colors.green,
+  //           strokeWidth: 2,
+  //         ));
+  //         safeZones.add(hospital); // Add to safe zones
+  //       }
+  //
+  //       for (var policeStation in policeStations) {
+  //         _circles.add(Circle(
+  //           circleId: CircleId(policeStation.name), // Unique ID for the circle
+  //           center: policeStation.location,
+  //           radius: 50, // radius in meters
+  //           fillColor: Colors.green.withOpacity(0.5),
+  //           strokeColor: Colors.green,
+  //           strokeWidth: 2,
+  //         ));
+  //         safeZones.add(policeStation); // Add to safe zones
+  //       }
+  //
+  //       // Fetch liquor stores and bars (unsafe zones)
+  //       List<Landmark> liquorStores =
+  //           await fetchLandmarks(userLocation, 'liquor_store');
+  //       List<Landmark> bars = await fetchLandmarks(userLocation, 'bar');
+  //
+  //       print('Fetched liquor stores: ${liquorStores.length}');
+  //       print('Fetched bars: ${bars.length}');
+  //
+  //       // Add circles for liquor stores and bars (unsafe zones)
+  //       for (var liquorStore in liquorStores) {
+  //         _circles.add(Circle(
+  //           circleId: CircleId(liquorStore.name), // Unique ID for the circle
+  //           center: liquorStore.location,
+  //           radius: 50, // radius in meters
+  //           fillColor: Colors.red.withOpacity(0.5),
+  //           strokeColor: Colors.red,
+  //           strokeWidth: 2,
+  //         ));
+  //         unsafeZoneCenters.add(liquorStore.location); // Add to unsafe zones
+  //       }
+  //
+  //       for (var bar in bars) {
+  //         _circles.add(Circle(
+  //           circleId: CircleId(bar.name), // Unique ID for the circle
+  //           center: bar.location,
+  //           radius: 50, // radius in meters
+  //           fillColor: Colors.red.withOpacity(0.5),
+  //           strokeColor: Colors.red,
+  //           strokeWidth: 2,
+  //         ));
+  //         unsafeZoneCenters.add(bar.location); // Add to unsafe zones
+  //       }
+  //
+  //       _checkUserZone(
+  //           userLocation); // Check if user is in a safe or unsafe zone
+  //     });
+  //   } catch (e) {
+  //     print('Error updating zones: $e');
+  //   }
+  // }
   Future<void> _updateZones(Position position) async {
     LatLng userLocation = LatLng(position.latitude, position.longitude);
     try {
       // Fetch hospitals and police stations
       List<Landmark> hospitals = await fetchLandmarks(userLocation, 'hospital');
-      List<Landmark> policeStations =
-          await fetchLandmarks(userLocation, 'police');
+      List<Landmark> policeStations = await fetchLandmarks(userLocation, 'police');
 
       print('Fetched hospitals: ${hospitals.length}');
       print('Fetched police stations: ${policeStations.length}');
 
-      setState(() async {
+      // Fetch liquor stores and bars (unsafe zones)
+      List<Landmark> liquorStores = await fetchLandmarks(userLocation, 'liquor_store');
+      List<Landmark> bars = await fetchLandmarks(userLocation, 'bar');
+
+      print('Fetched liquor stores: ${liquorStores.length}');
+      print('Fetched bars: ${bars.length}');
+
+      setState(() {
         _circles.clear(); // Clear previous circles
         safeZones.clear();
         unsafeZoneCenters.clear();
@@ -149,14 +340,6 @@ class _MapDisplayPageState extends State<MapDisplayPage> {
           safeZones.add(policeStation); // Add to safe zones
         }
 
-        // Fetch liquor stores and bars (unsafe zones)
-        List<Landmark> liquorStores =
-            await fetchLandmarks(userLocation, 'liquor_store');
-        List<Landmark> bars = await fetchLandmarks(userLocation, 'bar');
-
-        print('Fetched liquor stores: ${liquorStores.length}');
-        print('Fetched bars: ${bars.length}');
-
         // Add circles for liquor stores and bars (unsafe zones)
         for (var liquorStore in liquorStores) {
           _circles.add(Circle(
@@ -182,14 +365,12 @@ class _MapDisplayPageState extends State<MapDisplayPage> {
           unsafeZoneCenters.add(bar.location); // Add to unsafe zones
         }
 
-        _checkUserZone(
-            userLocation); // Check if user is in a safe or unsafe zone
+        _checkUserZone(userLocation); // Check if user is in a safe or unsafe zone
       });
     } catch (e) {
       print('Error updating zones: $e');
     }
   }
-
   void _checkUserZone(LatLng userLocation) {
     bool inSafeZone = safeZones.any((zone) {
       return _calculateDistance(userLocation, zone.location) <= 50; // 50 meters
@@ -239,61 +420,120 @@ class _MapDisplayPageState extends State<MapDisplayPage> {
   }
 
   Future<List<LatLng>> getDirections(LatLng origin, LatLng destination) async {
-    final url = Uri.parse('https://maps.googleapis.com/maps/api/directions/json'
-        '?origin=${origin.latitude},${origin.longitude}'
-        '&destination=${destination.latitude},${destination.longitude}'
-        '&key=AIzaSyBVIuWqktZ62jnDXTQKQlbciNMX6dXezlE' // Replace with your API key
-        );
+    const apiKey = "AIzaSyAnqy5abBsQQIXXzhj8VwiW5zXM3if2zaY"; // Replace with your actual API key
+    final url = Uri.parse("https://routes.googleapis.com/directions/v2:computeRoutes");
 
-    final response = await http.get(url);
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final routes = data['routes'];
-      if (routes.isNotEmpty) {
-        final polyline = routes[0]['overview_polyline']['points'];
-        return decodePolyline(polyline);
+    final body = jsonEncode({
+      "origin": {
+        "location": {
+          "latLng": {"latitude": origin.latitude, "longitude": origin.longitude}
+        }
+      },
+      "destination": {
+        "location": {
+          "latLng": {"latitude": destination.latitude, "longitude": destination.longitude}
+        }
+      },
+      "travelMode": "DRIVE",
+      "routingPreference": "TRAFFIC_AWARE"
+    });
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+          "X-Goog-Api-Key": apiKey,
+          "X-Goog-FieldMask": "routes.polyline"
+        },
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final routes = data['routes'] as List<dynamic>? ?? [];
+
+        if (routes.isNotEmpty) {
+          final polyline = routes[0]['polyline']['encodedPolyline'];
+          return decodePolyline(polyline);
+        } else {
+          throw 'No route found';
+        }
       } else {
-        throw 'No route found';
+        throw 'Failed to load directions: ${response.reasonPhrase}';
       }
-    } else {
-      throw 'Failed to load directions';
+    } catch (error) {
+      print('Error fetching directions: $error');
+      return [];
     }
   }
 
+// Function to decode polyline
   List<LatLng> decodePolyline(String polyline) {
     List<LatLng> points = [];
-    int index = 0;
-    int len = polyline.length;
-    int lat = 0;
-    int lng = 0;
+    int index = 0, len = polyline.length;
+    int lat = 0, lng = 0;
 
     while (index < len) {
-      int result = 0;
-      int shift = 0;
+      int shift = 0, result = 0;
       int byte;
       do {
         byte = polyline.codeUnitAt(index++) - 63;
-        result |= (byte & 0x1f) << shift;
+        result |= (byte & 0x1F) << shift;
         shift += 5;
       } while (byte >= 0x20);
-      int dLat = (result & 1) != 0 ? ~(result >> 1) : result >> 1;
-      lat += dLat;
+      int deltaLat = ((result & 1) == 1 ? ~(result >> 1) : (result >> 1));
+      lat += deltaLat;
 
-      result = 0;
       shift = 0;
+      result = 0;
       do {
         byte = polyline.codeUnitAt(index++) - 63;
-        result |= (byte & 0x1f) << shift;
+        result |= (byte & 0x1F) << shift;
         shift += 5;
       } while (byte >= 0x20);
-      int dLng = (result & 1) != 0 ? ~(result >> 1) : result >> 1;
-      lng += dLng;
+      int deltaLng = ((result & 1) == 1 ? ~(result >> 1) : (result >> 1));
+      lng += deltaLng;
 
       points.add(LatLng(lat / 1E5, lng / 1E5));
     }
-
     return points;
   }
+
+  // List<LatLng> decodePolyline(String polyline) {
+  //   List<LatLng> points = [];
+  //   int index = 0;
+  //   int len = polyline.length;
+  //   int lat = 0;
+  //   int lng = 0;
+  //
+  //   while (index < len) {
+  //     int result = 0;
+  //     int shift = 0;
+  //     int byte;
+  //     do {
+  //       byte = polyline.codeUnitAt(index++) - 63;
+  //       result |= (byte & 0x1f) << shift;
+  //       shift += 5;
+  //     } while (byte >= 0x20);
+  //     int dLat = (result & 1) != 0 ? ~(result >> 1) : result >> 1;
+  //     lat += dLat;
+  //
+  //     result = 0;
+  //     shift = 0;
+  //     do {
+  //       byte = polyline.codeUnitAt(index++) - 63;
+  //       result |= (byte & 0x1f) << shift;
+  //       shift += 5;
+  //     } while (byte >= 0x20);
+  //     int dLng = (result & 1) != 0 ? ~(result >> 1) : result >> 1;
+  //     lng += dLng;
+  //
+  //     points.add(LatLng(lat / 1E5, lng / 1E5));
+  //   }
+  //
+  //   return points;
+  // }
 
   @override
   Widget build(BuildContext context) {

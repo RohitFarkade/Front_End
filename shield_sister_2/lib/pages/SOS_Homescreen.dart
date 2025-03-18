@@ -232,6 +232,7 @@ import '/backend/Authentication.dart'; // Assuming the AuthService is in the bac
 // import '/new_pages/livepage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import "package:url_launcher/url_launcher.dart";
+import '../screens/location_choice_screen.dart';
 
 class SOSHomescreen extends StatefulWidget {
   const SOSHomescreen({super.key});
@@ -431,7 +432,11 @@ class _SOSHomescreenState extends State<SOSHomescreen> {
                 ),
                 buildActionButton(Icons.notifications_active, "Alert",
                       (){
-                  _navigateToMap(context, userId);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => LocationChoiceScreen()),
+                        );
+                  // _navigateToMap(context, userId);
                       },
                 ),
               ],

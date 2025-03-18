@@ -9,9 +9,11 @@ plugins {
 }
 
 android {
-    namespace = "com.shield_sister.shield_sister_2"
+//    namespace = "com.shield_sister.shield_sister_2"
+    namespace "com.shield_sister.shield_sister_2" // Change this to your app's package name
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
+    compileSdkVersion 35  // Ensure this is set
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
