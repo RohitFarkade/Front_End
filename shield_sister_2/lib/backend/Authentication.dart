@@ -9,12 +9,13 @@ class AuthService {
   // shield-sisters-dep-d4z8-18kdwkmex-rohits-projects-51c777d8.vercel.app
   final String _baseUrl = "https://shield-sisters-dep-d4z8-18kdwkmex-rohits-projects-51c777d8.vercel.app/api/sos/savecontacts";
   final String link = "https://shield-sisters-dep-d4z8-18kdwkmex-rohits-projects-51c777d8.vercel.app/api";
+  final String _baseUrl2 = "https://shield-sisters-dep-d4z8.vercel.app/api/sos/sendsos";
 
   Map<String, String> _headers() => {
         'Content-Type': 'application/json',
       };
    Future<Map<String, dynamic>> sendSOS(String userId, String latitude, String longitude) async {
-    final url = Uri.parse('$link/sos/sendsos');
+    final url = Uri.parse('$_baseUrl2');
     try {
       final response = await http.post(
         url,
@@ -86,9 +87,10 @@ class AuthService {
             }),
           )
           .timeout(const Duration(seconds: 10)); // Timeout after 10 seconds
-
+      print(response.body);
       return _processResponse(response);
     } catch (e) {
+      print(e);
       return {
         "message": "An error occurred",
         "error": e.toString(),
