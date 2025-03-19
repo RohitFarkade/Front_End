@@ -54,6 +54,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.13.0
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -80,6 +81,7 @@ assets:
   - assets/images/womenDefence.jpg
   - assets/images/stayAlert.jpg
   - assets/map_themes/nightTheme.json
+  - assets/logo/Logo.png
 # - assets/map_themes/silver.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
