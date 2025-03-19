@@ -7,14 +7,22 @@ class AuthService {
   // final String _baseUrl = "http://10.0.2.2:5000/api/sos/savecontacts";
   // final String link = "http://10.0.2.2:5000/api";
   // shield-sisters-dep-d4z8-18kdwkmex-rohits-projects-51c777d8.vercel.app
-  final String _baseUrl = "https://shield-sisters-dep-d4z8-18kdwkmex-rohits-projects-51c777d8.vercel.app/api/sos/savecontacts";
-  final String link = "https://shield-sisters-dep-d4z8-18kdwkmex-rohits-projects-51c777d8.vercel.app/api";
+  // final String _baseUrl = "https://shield-sisters-dep-d4z8-18kdwkmex-rohits-projects-51c777d8.vercel.app/api/sos/savecontacts";
+  // final String link = "https://shield-sisters-dep-d4z8-18kdwkmex-rohits-projects-51c777d8.vercel.app/api";
+  // final String _baseUrl2 = "https://shield-sisters-dep-d4z8.vercel.app/api/sos/sendsos";
+  // final String _contactUrl = "https://shield-sisters-dep-d4z8.vercel.app/api/sos";
+  final String _baseUrl = "https://shield-sisters-dep-d4z8.vercel.app/api/sos/savecontacts";
+  final String link = "https://shield-sisters-dep-d4z8.vercel.app/api";
   final String _baseUrl2 = "https://shield-sisters-dep-d4z8.vercel.app/api/sos/sendsos";
+  final String _contactUrl = "https://shield-sisters-dep-d4z8.vercel.app/api/sos";
 
-  Map<String, String> _headers() => {
+  Map<String, String> _headers() =>
+      {
         'Content-Type': 'application/json',
       };
-   Future<Map<String, dynamic>> sendSOS(String userId, String latitude, String longitude) async {
+
+  Future<Map<String, dynamic>> sendSOS(String userId, String latitude,
+      String longitude) async {
     final url = Uri.parse('$_baseUrl2');
     try {
       final response = await http.post(
@@ -43,8 +51,9 @@ class AuthService {
     }
   }
 
- 
-  Future<Map<String, dynamic>> register(String fullname, String email, String password) async {
+
+  Future<Map<String, dynamic>> register(String fullname, String email,
+      String password) async {
     final url = Uri.parse('$link/users/signup');
     try {
       final response = await http.post(
@@ -79,13 +88,13 @@ class AuthService {
     try {
       final response = await http
           .post(
-            url,
-            headers: _headers(),
-            body: jsonEncode({
-              "email": email,
-              "password": password,
-            }),
-          )
+        url,
+        headers: _headers(),
+        body: jsonEncode({
+          "email": email,
+          "password": password,
+        }),
+      )
           .timeout(const Duration(seconds: 10)); // Timeout after 10 seconds
       print(response.body);
       return _processResponse(response);
@@ -97,7 +106,9 @@ class AuthService {
       };
     }
   }
-  Future<Map<String, dynamic>> SaveContact(String userId, Contact contact) async {
+
+  Future<Map<String, dynamic>> SaveContact(String userId,
+      Contact contact) async {
     // final url = Uri.parse('$link/sos/savecontacts');
     final url = Uri.parse('$_baseUrl');
 
@@ -122,20 +133,81 @@ class AuthService {
         print("Error: ${response.statusCode}, ${response.body}");
       }
       return _processResponse(response);
-    }  catch (e) {
+    } catch (e) {
       return {
         "message": "An error occurred",
         "error": e.toString(),
       };
     }
-
   }
-}
 
 
-Map<String, dynamic> _processResponse(http.Response response) {
+  Future<Map<String, dynamic>> updateContact(String userId, String contactId,
+      String name, String phone) async {
+    final url = Uri.parse('$_contactUrl/updatecontact/');
     try {
+      final response = await http.post(
+        url,
+        headers: _headers(),
+        body: jsonEncode({
+          "userId": userId,
+          "contactId": contactId,
+          "name": name,
+          "phone": phone,
+        }),
+      );
+
       if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        print("Error: ${response.statusCode}, ${response.body}");
+        return {
+          "message": "Failed to update contact",
+          "details": jsonDecode(response.body),
+        };
+      }
+    } catch (e) {
+      return {
+        "message": "An error occurred",
+        "error": e.toString(),
+      };
+    }
+  }
+
+// New method: Delete Contact
+  Future<Map<String, dynamic>> deleteContact(String userId,
+      String contactId) async {
+    final url = Uri.parse('$_contactUrl/deletecontact/');
+    try {
+      final response = await http.delete(
+        url,
+        headers: _headers(),
+        body: jsonEncode({
+          "userId": userId,
+          "contactId": contactId,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        print("Error: ${response.statusCode}, ${response.body}");
+        return {
+          "message": "Failed to delete contact",
+          "details": jsonDecode(response.body),
+        };
+      }
+    } catch (e) {
+      return {
+        "message": "An error occurred",
+        "error": e.toString(),
+      };
+    }
+  }
+
+  Map<String, dynamic> _processResponse(http.Response response) {
+    try {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         return jsonDecode(response.body);
       } else {
         return {
@@ -151,3 +223,4 @@ Map<String, dynamic> _processResponse(http.Response response) {
     }
   }
 
+}
