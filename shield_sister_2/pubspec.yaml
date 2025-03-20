@@ -48,6 +48,7 @@ dependencies:
   flutter_dotenv: ^5.1.0
   shared_preferences: ^2.0.15
   url_launcher: ^6.0.9
+  share_plus: ^10.1.4
 #  share: ^2.0.4
 #  share_plus: ^10.1.4
 

@@ -1,6 +1,8 @@
 
 import 'package:flutter/material.dart';
 import '../services/location_service.dart';
+import 'package:share_plus/share_plus.dart';
+
 
 class ShareLocationScreen extends StatefulWidget {
   @override
@@ -183,6 +185,7 @@ class _ShareLocationScreenState extends State<ShareLocationScreen> {
                                   onPressed: () {
                                     // Implement sharing functionality here
                                     // For example: Share.share('Track my location with ID: $trackingId');
+                                    Share.share('Check this out: $trackingId');
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.black,
