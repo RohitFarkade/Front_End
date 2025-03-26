@@ -263,7 +263,9 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
+import '../services/audio_player.dart';
 import '/backend/Authentication.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -360,7 +362,16 @@ class _SOSHomescreenState extends State<SOSHomescreen> {
       _showMessage(context, 'Error opening the dialer: $e', isError: true);
     }
   }
+  static const platform = MethodChannel('com.shield_sister.shield_sister_2/audio');
 
+  Future<void> _playBuzzer() async {
+    try {
+      final result = await platform.invokeMethod('playBuzzer');
+      debugPrint("Result from native: $result");
+    } catch (e) {
+      debugPrint("Error calling native playBuzzer: $e");
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -485,6 +496,10 @@ class _SOSHomescreenState extends State<SOSHomescreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
+                        ElevatedButton(
+                          onPressed: _playBuzzer,
+                          child: const Text(" Buzzer"),
+                        ),
                         buildActionButton(
                           Icons.local_police,
                           "Police",
