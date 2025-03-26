@@ -3,7 +3,7 @@
 // import 'package:geolocator/geolocator.dart'; // Import Geolocator
 // import '/backend/Authentication.dart'; // Assuming the AuthService is in the backend folder
 // // import '/new_pages/mymap.dart'; // No changes made to your existing imports
-// // import '/new_pages/livepage.dart';
+// // import '/new_pages/UselessLiveLoc.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
 // import "package:url_launcher/url_launcher.dart";
 // import '../screens/location_choice_screen.dart';

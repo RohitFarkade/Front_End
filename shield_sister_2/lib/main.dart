@@ -8,7 +8,7 @@ import "package:shield_sister_2/pages/User_Login_Page.dart";
 import "package:shield_sister_2/pages/User_Registration_Page.dart";
 import 'firebase_options.dart';
 import 'package:shield_sister_2/pages/SOS_Homescreen.dart';
-import 'new_pages/MyMap.dart';
+// import 'new_pages/UselessMyMap.dart';
 
 
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -64,7 +64,7 @@ void main() async {
       "/reg": (context) => const UserRegistrationPage(),
       "/log": (context) => const UserLoginPage(),
       "/home": (context) => const SOSHomescreen(),
-      "/redirect": (context) => RedirectPage(),
+      // "/redirect": (context) => RedirectPage(),
       "/helpline": (context) => const newHelplinePage(),
 
     },
