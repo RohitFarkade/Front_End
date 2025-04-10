@@ -159,7 +159,7 @@ class AuthService {
 
 
   Future<Map<String, dynamic>> register(String fullname, String email,
-      String password,String phoneNumber, String otp) async {
+      String password,String phoneNumber) async {
     final url = Uri.parse('$link/users/signup');
     try {
       final response = await http.post(
@@ -170,7 +170,6 @@ class AuthService {
           'email': email,
           'password': password,
           'phone' : phoneNumber,
-          'otp' : otp,
         }),
       );
 
