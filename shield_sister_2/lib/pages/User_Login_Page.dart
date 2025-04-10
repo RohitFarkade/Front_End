@@ -160,6 +160,18 @@ class _UserLoginPageState extends State<UserLoginPage> {
                     ),
                   ],
                 ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pushNamed(context, '/forget'),
+                      child: Text(
+                        'Forgot Password?',
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: Colors.black),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),

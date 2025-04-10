@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'dart:io';
 import 'package:intl/intl.dart';
+import 'dart:math';
 
 class AuthService {
   // final String _baseUrl = "http://10.0.2.2:5000/api/sos/savecontacts";
@@ -328,5 +329,40 @@ class AuthService {
       };
     }
   }
+
+
+  //TODO: Edit this for Sending OTP feature add vercel server link here !!
+  Future<Map<String, dynamic>> sendOtp(String email) async {
+    final res = await http.post(
+      Uri.parse('https://your-vercel-app.vercel.app/api/users/forgot-password/sendotp'),
+      body: jsonEncode({'email': email}),
+      headers: {'Content-Type': 'application/json'},
+    );
+    return jsonDecode(res.body);
+  }
+
+  Future<Map<String, dynamic>> verifyOtp(String email, String otp) async {
+    final res = await http.post(
+      Uri.parse('https://your-vercel-app.vercel.app/api/users/verify-otp'),
+      body: jsonEncode({'email': email, 'otp': otp}),
+      headers: {'Content-Type': 'application/json'},
+    );
+    return jsonDecode(res.body);
+  }
+
+
+  Future<Map<String, dynamic>> resetPassword(String email, String otp, String newPassword) async {
+    final response = await http.post(
+      Uri.parse('https://your-vercel-url/reset-password'),
+      body: {'email': email, 'otp': otp, 'newPassword': newPassword},
+    );
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      return {'success': false, 'message': 'Failed to reset password'};
+    }
+  }
+
 
 }

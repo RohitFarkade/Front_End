@@ -4,6 +4,7 @@ import "package:flutter/material.dart";
 import "package:flutter_local_notifications/flutter_local_notifications.dart";
 import "package:shield_sister_2/new_pages/newhelplinepage.dart";
 import "package:shield_sister_2/pages/BottomNavigation.dart";
+import "package:shield_sister_2/pages/UserForgotPage.dart";
 import "package:shield_sister_2/pages/User_Login_Page.dart";
 import "package:shield_sister_2/pages/User_Registration_Page.dart";
 import "package:shield_sister_2/setting_pages/HelpAndSupport.dart";
@@ -54,7 +55,6 @@ void main() async {
     print('User declined or has not accepted permission');
   }
 
-  // initializeLocalNotifications();
 
   runApp(MaterialApp(
     debugShowMaterialGrid: false,
@@ -70,6 +70,7 @@ void main() async {
       "/sosSettings": (context) => const SOSSettingsPage(),
       "/privacySettings": (context) => const PrivacySettingsPage(),
       "/help": (context) => const HelpSupportPage(),
+      "/forget": (context) => ForgotPasswordPage(),
 
 
     },
