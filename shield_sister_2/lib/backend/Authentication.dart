@@ -170,6 +170,7 @@ class AuthService {
           'email': email,
           'password': password,
           'phone' : phoneNumber,
+
         }),
       );
 
