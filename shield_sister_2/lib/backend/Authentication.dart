@@ -26,7 +26,63 @@ class AuthService {
       {
         'Content-Type': 'application/json',
       };
+  Future<Map<String, dynamic>> sendRegistrationOtp(String email, String fullname, String phone) async {
+    final url = Uri.parse('$link/users/send-registration-otp');
+    try {
+      final response = await http.post(
+        url,
+        headers: _headers(),
+        body: jsonEncode({
+          'email': email,
+          'fullname': fullname,
+          'phone': phone,
+        }),
+      );
 
+      final responseData = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        return responseData;
+      } else {
+        return {
+          'message': responseData['error'] ?? 'Failed to send OTP',
+        };
+      }
+    } catch (e) {
+      return {
+        'message': 'An error occurred',
+        'error': e.toString(),
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> verifyRegistrationOtp(String email, String otp) async {
+    final url = Uri.parse('$link/users/verify-registration-otp');
+    print('Sending OTP: $otp, Type: ${otp.runtimeType}');
+    try {
+      final response = await http.post(
+        url,
+        headers: _headers(),
+        body: jsonEncode({
+          'email': email,
+          'otp': otp,
+        }),
+      );
+
+      final responseData = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        return responseData;
+      } else {
+        return {
+          'message': responseData['error'] ?? 'Failed to verify OTP',
+        };
+      }
+    } catch (e) {
+      return {
+        'message': 'An error occurred',
+        'error': e.toString(),
+      };
+    }
+  }
   // Future<Map<String, dynamic>> sendSOS(String userId, String latitude,
   //     String longitude) async {
   //   final url = Uri.parse('$_baseUrl2');
@@ -368,26 +424,7 @@ class AuthService {
       return {'success': false, 'message': 'Failed to reset password'};
     }
   }
-  Future<Map<String, dynamic>> sendRegistrationOtp(String email) async {
-    final url = Uri.parse('$link/users/send-reset-otp');
-    try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'email': email}),
-      );
 
-      final responseData = jsonDecode(response.body);
-
-      if (response.statusCode == 200) {
-        return responseData;
-      } else {
-        throw Exception(responseData['error'] ?? 'Failed to send reset OTP');
-      }
-    } catch (e) {
-      throw Exception('Error sending reset OTP: $e');
-    }
-  }
 
 
 }
