@@ -53,6 +53,7 @@ dependencies:
   battery_plus: ^6.2.1
   flutter_ringtone_player: ^4.0.0+4
   device_info_plus: ^11.3.0
+  android_intent_plus: ^4.0.1
 
 dev_dependencies:
   flutter_test:
