@@ -53,7 +53,10 @@ dependencies:
   battery_plus: ^6.2.1
   flutter_ringtone_player: ^4.0.0+4
   device_info_plus: ^11.3.0
+  socket_io_client: ^2.0.3+1
+  flutter_animate: ^4.5.0
   android_intent_plus: ^4.0.1
+
 
 dev_dependencies:
   flutter_test:
@@ -79,14 +82,17 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-assets:
-  - assets/Contact_Avatar.png
-  - assets/sos.png
-  - assets/images/womenDefence.jpg
-  - assets/images/stayAlert.jpg
-  - assets/map_themes/nightTheme.json
-  - assets/logo/Logo.png
-# - assets/map_themes/silver.json
+  assets:
+    - assets/Contact_Avatar.png
+    - assets/sos.png
+    - assets/images/womenDefence.jpg
+    - assets/images/stayAlert.jpg
+    - assets/map_themes/nightTheme.json
+    - assets/logo/Logo.png
+    - assets/ringtone.mp3
+    - assets/fake_caller.jpg
+    - assets/icons/
+    - assets/profile/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

@@ -1,4 +1,5 @@
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '/backend/Authentication.dart';
@@ -16,6 +17,22 @@ class _UserLoginPageState extends State<UserLoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool isLoading = false;
+
+  Future<String?> getUserIdByemail(String email) async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: email)
+        .limit(1) // optional, in case you expect only one match
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      print("User Id to be searched for email: $email is ${querySnapshot.docs.first.id}");
+      return querySnapshot.docs.first.id; // <-- document ID
+    } else {
+      return null; // Not found
+    }
+  }
+
 
   void login() async {
     final email = emailController.text.trim();
@@ -38,12 +55,16 @@ class _UserLoginPageState extends State<UserLoginPage> {
     try {
       final result = await authService.login(email, password);
 
+      print("Message for login: ${result['message']}");
+
       if (result.containsKey('message') && result['message'] == 'Login successful') {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('userId', result['user']['_id']);
         await prefs.setString('jwtToken', result['token']);
         await prefs.setString('username', result['user']['fullname']);
         await prefs.setString('email', result['user']['email']);
+        String? fireId = await getUserIdByemail(result['user']['email']);
+        await prefs.setString('fireId', fireId!);
 
         Navigator.pushReplacementNamed(context, '/bot');
       } else {

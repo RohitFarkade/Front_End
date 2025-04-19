@@ -1,6 +1,7 @@
 
 
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '/backend/Authentication.dart';
@@ -14,6 +15,7 @@ class UserRegistrationPage extends StatefulWidget {
 
 class _UserRegistrationPageState extends State<UserRegistrationPage> {
   final AuthService authService = AuthService();
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   final TextEditingController fullnameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
@@ -157,6 +159,19 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
       final result = await authService.register(fullname, email, password, phone);
       if (!mounted) return;
       if (result['message'] == 'User registered successfully') {
+        // Saving things in Firestore after successful registration in mongoDB
+        await firestore.collection('users').add({
+          'name': fullname,
+          'email': email,
+          'phone': phone,
+          'friend_request': {},
+          'friends': [],
+          'isSharingSOS': false,
+          'sosCode': 0000,
+          'sosActive': false,
+          'myTrackId': 0,
+          'TrackTo': [],
+        });
         _showSnackBar('Registration Successful');
         Navigator.pushReplacementNamed(context, '/log');
       } else {

@@ -72,7 +72,7 @@ class _MainSettingPageState extends State<MainSettingPage> {
     );
   }
 
-  void _performLogout(BuildContext context) {
+  Future<void> _performLogout(BuildContext context) async{
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Logged out successfully', style: GoogleFonts.poppins()),
@@ -81,7 +81,15 @@ class _MainSettingPageState extends State<MainSettingPage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
-    Navigator.pushReplacementNamed(context, '/log');
+    try {
+      if(mounted){
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.remove('jwtToken');
+        Navigator.pushReplacementNamed(context, '/log');
+      }
+    }catch(e){
+      print("Error Navigating to Login Page $e");
+    }
   }
 
   @override

@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
@@ -111,7 +110,7 @@ class MapDisplayPage extends StatefulWidget {
 }
 
 class _MapDisplayPageState extends State<MapDisplayPage> {
-  late GoogleMapController _mapController;
+  GoogleMapController? _mapController;
   LatLng _currentPosition = const LatLng(20.5937, 78.9629);
   LatLng _lastCheckedPosition = const LatLng(20.5937, 78.9629);
   final Set<Circle> _circles = {};
@@ -140,9 +139,10 @@ class _MapDisplayPageState extends State<MapDisplayPage> {
   @override
   void dispose() {
     _statusTimer?.cancel();
-    _mapController.dispose();
+    _mapController?.dispose();
     super.dispose();
   }
+
 
   Future<void> _initializeMap() async {
     await _updateUserLocation();
@@ -161,8 +161,10 @@ class _MapDisplayPageState extends State<MapDisplayPage> {
           _currentPosition = newPosition;
           await _updateZones(position);
           await _checkForNearbyReports(newPosition);
-          _mapController
-              .animateCamera(CameraUpdate.newLatLng(_currentPosition));
+          if(_mapController != null){
+            _mapController
+                ?.animateCamera(CameraUpdate.newLatLng(_currentPosition));
+          }
         }
       } catch (e) {
         _showError('Failed to get location: $e');
@@ -185,8 +187,7 @@ class _MapDisplayPageState extends State<MapDisplayPage> {
             markerId: MarkerId(report.location.toString()),
             position: report.location,
             infoWindow: InfoWindow(title: 'Reported: ${report.description}'),
-            icon: BitmapDescriptor.defaultMarkerWithHue(
-                BitmapDescriptor.hueOrange),
+            icon: BitmapDescriptor.defaultMarker,
           );
         }).toSet();
       });
@@ -556,11 +557,11 @@ class _MapDisplayPageState extends State<MapDisplayPage> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          "Safety Map",
+                          "Safety Map 🗺️",
                           style: GoogleFonts.poppins(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black),
+                              color: Colors.pinkAccent),
                         ),
                       ),
                     ],
@@ -575,10 +576,10 @@ class _MapDisplayPageState extends State<MapDisplayPage> {
                       ? null
                       : () async {
                           await _updateUserLocation();
-                          _mapController.animateCamera(
+                          _mapController?.animateCamera(
                               CameraUpdate.newLatLng(_currentPosition));
                         },
-                  backgroundColor: Colors.black,
+                  backgroundColor: Color(0xFF009688),
                   child: const Icon(Icons.my_location, color: Colors.white),
                 ),
               ),
@@ -749,7 +750,7 @@ class _MapDisplayPageState extends State<MapDisplayPage> {
     return ElevatedButton(
       onPressed: _isLoading ? null : onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.black,
+        backgroundColor: Color(0xFF673AB7),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         elevation: 8,
