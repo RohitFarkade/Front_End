@@ -122,6 +122,8 @@ class _TrackerState extends State<Tracker> {
                             MaterialPageRoute(
                               builder: (context) => ViewLocationScreen(
                                 trackingId: trackId.toString(),
+                                isSOS: false,
+                                SOSCode: "0000",
                               ),
                             ),
                           );

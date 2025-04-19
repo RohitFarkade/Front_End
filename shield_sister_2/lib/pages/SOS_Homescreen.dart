@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../new_pages/newhelplinepage.dart';
+import '../services/location_service.dart';
 import '/backend/Authentication.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -25,6 +26,8 @@ class _SOSHomescreenState extends State<SOSHomescreen> {
   String userId = "";
   bool _isLoading = false;
   String fireId = "";
+  final LocationService _locationService = LocationService();
+  String shareId = "";
 
   @override
   void initState() {
@@ -84,6 +87,24 @@ class _SOSHomescreenState extends State<SOSHomescreen> {
     );
   }
 
+  Future<void> checkExistingSOS() async{
+    final prefs = await SharedPreferences.getInstance();
+    final sosExist = prefs.getString('isSOSPresent');
+    if(sosExist == "true"){
+      final sosCode = prefs.getString('SOSCode') ?? "";
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CodeEntryScreen(senderId: fireId, expectedCode: sosCode),
+          ),
+        );
+      }
+    }else{
+      _sendSOS(context);
+    }
+  }
+
   void _sendSOS(BuildContext context) async {
     setState(() => _isLoading = true);
     Position? position = await _getCurrentLocation();
@@ -96,6 +117,22 @@ class _SOSHomescreenState extends State<SOSHomescreen> {
 
     String sosCode = _generateRandomCode();
     print('Generated SOS code: $sosCode');
+
+    try {
+      String id = await _locationService.startSharing();
+      setState(() {
+        shareId = id;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error starting location sharing: $e'),
+          backgroundColor: Colors.black87,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+      );
+    }
 
     // Update sender's document with SOS details
     print("Changing sos parameters for docID: $fireId");
@@ -126,6 +163,9 @@ class _SOSHomescreenState extends State<SOSHomescreen> {
     setState(() => _isLoading = false);
     if (result['message'] == 'SOS processed!') {
       _showMessage(context, 'The S.O.S alert was sent successfully.');
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('SOSCode', sosCode);
+      await prefs.setString('isSOSPresent', "true");
       if (mounted) {
         Navigator.push(
           context,
@@ -252,7 +292,7 @@ class _SOSHomescreenState extends State<SOSHomescreen> {
                   Expanded(
                     child: Center(
                       child: GestureDetector(
-                        onTap: () => _sendSOS(context),
+                        onTap: () => checkExistingSOS(),
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
                           decoration: BoxDecoration(

@@ -150,7 +150,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'Code_Entry.dart';
+import '../services/view_location_screen.dart';
 
 class NotificationsPage extends StatefulWidget {
   const NotificationsPage({super.key});
@@ -162,7 +162,7 @@ class NotificationsPage extends StatefulWidget {
 class _NotificationsPageState extends State<NotificationsPage> {
   String currentUserId = "";
   List<dynamic>? currentUserFriends;
-
+  String SOSCode = "";
   @override
   void initState() {
     super.initState();
@@ -249,6 +249,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
               final senderName = senderData['name'] ?? 'Unknown';
               final sosCode = senderData['sosCode'] ?? 'N/A';
               final isActive = senderData['sosActive'] ?? false;
+              final trackID = senderData['myTrackId'] ?? "";
 
               if (!isActive) return const SizedBox.shrink();
 
@@ -284,19 +285,20 @@ class _NotificationsPageState extends State<NotificationsPage> {
                     'Code: $sosCode',
                     style: const TextStyle(fontSize: 14, color: Colors.grey),
                   ),
-                  // onTap: () {
-                  //   Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //       builder: (context) => CodeEntryScreen(
-                  //         senderId: senderId,
-                  //         expectedCode: sosCode,
-                  //       ),
-                  //     ),
-                  //   ).catchError((e) {
-                  //     _showMessage('Navigation error: $e', isError: true);
-                  //   });
-                  // },
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ViewLocationScreen(
+                          trackingId: trackID.toString(),
+                          isSOS: true,
+                          SOSCode: sosCode.toString(),
+                        ),
+                      ),
+                    ).catchError((e) {
+                      _showMessage('Navigation error: $e', isError: true);
+                    });
+                  },
                 ),
               );
             },

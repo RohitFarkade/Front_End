@@ -103,6 +103,9 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../services/location_service.dart';
 
 class CodeEntryScreen extends StatefulWidget {
   final String senderId;
@@ -117,6 +120,41 @@ class CodeEntryScreen extends StatefulWidget {
 class _CodeEntryScreenState extends State<CodeEntryScreen> {
   final TextEditingController _codeController = TextEditingController();
   bool _isLoading = false;
+  final LocationService _locationService = LocationService();
+  String shareId = "";
+  String fireId = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserData();
+  }
+
+  Future<void> _getUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      fireId = prefs.getString('fireId') ?? "";
+    });
+  }
+
+  Future<void> fetchShareId() async{
+    if (fireId.isEmpty) {
+      await _getUserData();
+    }
+
+    DocumentSnapshot userDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(fireId)
+        .get();
+
+    print("Share ID in userDoc: ${userDoc['myTrackId']}");
+
+    if(userDoc['myTrackId'] != ""){
+      setState(() {
+        shareId = userDoc['myTrackId'];
+      });
+    }
+  }
 
   void _verifyCode() async {
     setState(() => _isLoading = true);
@@ -131,9 +169,30 @@ class _CodeEntryScreenState extends State<CodeEntryScreen> {
           'isSharingSOS': false,
           'sosCode': 0,
         });
+        try {
+          await fetchShareId();
+          print("Share ID: $shareId");
+          await _locationService.stopSharing(shareId);
+          setState(() {
+            shareId = "";
+          });
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error stopping location sharing: $e'),
+              backgroundColor: Colors.black87,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+          );
+        }
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Code verified, SOS stopped!')),
         );
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString("SOSCode", "0000");
+        await prefs.setString("isSOSPresent", "false");
+
         Navigator.pop(context);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(

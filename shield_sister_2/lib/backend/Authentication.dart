@@ -168,12 +168,17 @@ class AuthService {
 
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
+
       } else {
         return {
           'message': 'Failed to send SOS',
           'details': jsonDecode(response.body),
         };
       }
+      // return{
+      //   'message': 'SOS processed!',
+      //   'details': 'Great work',
+      // };
     } catch (e) {
       print("Error sending sos ${e.toString()}");
       return {
