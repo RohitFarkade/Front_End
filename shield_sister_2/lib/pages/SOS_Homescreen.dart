@@ -159,6 +159,7 @@ class _SOSHomescreenState extends State<SOSHomescreen> {
       userId,
       position.latitude.toString(),
       position.longitude.toString(),
+      sosCode,
     );
 
     setState(() => _isLoading = false);

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'package:http/http.dart' as http;
 import 'package:shield_sister_2/new_pages/Contact_Management_Page.dart';
 import 'package:battery_plus/battery_plus.dart';
@@ -113,7 +114,7 @@ class AuthService {
   //   }
   // }
 
-  Future<Map<String, dynamic>> sendSOS(String userId, String latitude, String longitude) async {
+  Future<Map<String, dynamic>> sendSOS(String userId, String latitude, String longitude,String SOSCode) async {
     final url = Uri.parse('$_baseUrl2');
 
     try {
@@ -162,10 +163,11 @@ class AuthService {
           'networkStatus': connectionType,
           'deviceModel': deviceModel,
           'timestamp': timestamp,
-          'ringerMode': ringerMode, // Optional, replace if you find platform plugin
+          'ringerMode': ringerMode,
+          'SOSCode': SOSCode// Optional, replace if you find platform plugin
         }),
       );
-
+print(SOSCode);
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
 
