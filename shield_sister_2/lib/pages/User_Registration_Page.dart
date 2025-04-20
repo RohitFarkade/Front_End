@@ -171,6 +171,7 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
           'sosActive': false,
           'myTrackId': 0,
           'TrackTo': [],
+          'myProf': 0,
         });
         _showSnackBar('Registration Successful');
         Navigator.pushReplacementNamed(context, '/log');

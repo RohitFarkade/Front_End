@@ -17,6 +17,18 @@ class _UserLoginPageState extends State<UserLoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool isLoading = false;
+  int img_ind = 0;
+
+  Future<void> NecessaryDetails(String fireIDs) async{
+    DocumentSnapshot userDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(fireIDs)
+        .get();
+
+    setState(() {
+      img_ind = userDoc['myProf'] ?? 0;
+    });
+  }
 
   Future<String?> getUserIdByemail(String email) async {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
@@ -65,6 +77,9 @@ class _UserLoginPageState extends State<UserLoginPage> {
         await prefs.setString('email', result['user']['email']);
         String? fireId = await getUserIdByemail(result['user']['email']);
         await prefs.setString('fireId', fireId!);
+        await NecessaryDetails(fireId);
+        await prefs.setString('profileNumber', img_ind.toString());
+
 
         Navigator.pushReplacementNamed(context, '/bot');
       } else {

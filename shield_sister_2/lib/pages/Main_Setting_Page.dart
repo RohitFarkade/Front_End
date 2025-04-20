@@ -1,4 +1,5 @@
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,6 +18,23 @@ class MainSettingPage extends StatefulWidget {
 class _MainSettingPageState extends State<MainSettingPage> {
   String userName = "";
   String userEmail = "";
+  String selectedImageIndex = "0";
+  String selectedImage = 'assets/profile/man1.png'; // Default profile
+  final List<String> profileImages = [
+    'assets/profile/man1.png',
+    'assets/profile/man2.png',
+    'assets/profile/man3.png',
+    'assets/profile/man4.png',
+    'assets/profile/man5.png',
+    'assets/profile/man6.png',
+    'assets/profile/wom1.png',
+    'assets/profile/wom2.png',
+    'assets/profile/wom3.png',
+    'assets/profile/wom4.png',
+    'assets/profile/wom5.png',
+    'assets/profile/wom6.png',
+  ];
+  String fireId = "";
 
   @override
   void initState() {
@@ -24,11 +42,21 @@ class _MainSettingPageState extends State<MainSettingPage> {
     _getUserData();
   }
 
+  Future<void> RemoveDetails() async{
+
+    await FirebaseFirestore.instance.collection('users').doc(fireId).update({
+      'myProf': int.parse(selectedImageIndex),
+    });
+  }
+
   void _getUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       userName = prefs.getString('username') ?? "User";
       userEmail = prefs.getString('email') ?? "email@example.com";
+      selectedImageIndex = prefs.getString('profileNumber') ?? "0";
+      fireId = prefs.getString('fireId') ?? "";
+      print("Selected Image Index: $selectedImageIndex");
     });
   }
 
@@ -62,6 +90,7 @@ class _MainSettingPageState extends State<MainSettingPage> {
                 style: GoogleFonts.poppins(fontSize: 16, color: Colors.black),
               ),
               onPressed: () {
+                RemoveDetails();
                 Navigator.of(context).pop();
                 _performLogout(context);
               },
@@ -92,26 +121,84 @@ class _MainSettingPageState extends State<MainSettingPage> {
     }
   }
 
+
+  void _showPhotoPicker() {
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Container(
+          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+          height: 120,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: profileImages.length,
+            separatorBuilder: (context, index) => SizedBox(width: 16),
+            itemBuilder: (context, index) {
+              final image = profileImages[index];
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selectedImage = image;
+                    selectedImageIndex = index.toString();
+                  });
+                  Navigator.pop(context);
+                },
+                child: CircleAvatar(
+                  backgroundImage: AssetImage(image),
+                  radius: 30, // Smaller radius
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(
+          "Settings 🛠️",
+          style: GoogleFonts.openSans(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.pinkAccent,
+          ),
+        ),
+        centerTitle: false,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings, color: Colors.black),
+            onPressed: (){
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsPage()),
+              );
+            },
+          ),
+        ],
+      ),
+      extendBodyBehindAppBar: true,
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Colors.white,
-              Colors.grey.shade100,
-            ],
+            colors: [Colors.white, Colors.grey.shade100],
           ),
         ),
         child: SafeArea(
           child: Stack(
             children: [
-              // Decorative background elements
+              // Light circular decorations
               Positioned(
                 top: -50,
                 left: -50,
@@ -137,51 +224,31 @@ class _MainSettingPageState extends State<MainSettingPage> {
                 ),
               ),
 
-              // Main content
               CustomScrollView(
                 slivers: [
-                  // Custom header
-                  SliverPadding(
-                    padding: const EdgeInsets.all(16.0),
-                    sliver: SliverToBoxAdapter(
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 24.0),
                       child: Column(
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              // IconButton(
-                              //   icon: const Icon(Icons.arrow_back, color: Colors.black),
-                              //   onPressed: () => Navigator.pop(context),
-                              // ),
-                              IconButton(
-                                icon: const Icon(Icons.settings, color: Colors.black),
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => SettingsPage()),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
                           Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.3),
-                                  spreadRadius: 5,
-                                  blurRadius: 15,
-                                ),
-                              ],
-                            ),
-                            child: const CircleAvatar(
-                              radius: 60,
-                              backgroundImage: NetworkImage(
-                                "https://img.freepik.com/premium-vector/women-beauty-face-clipart-vector-illustration_1123392-5133.jpg?semt=ais_hybrid",
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.3),
+                                    spreadRadius: 5,
+                                    blurRadius: 15,
+                                  ),
+                                ],
                               ),
-                            ),
+                              child: GestureDetector(
+                                onTap: _showPhotoPicker,
+                                child: CircleAvatar(
+                                  radius: 60,
+                                  backgroundImage: AssetImage(profileImages[int.parse(selectedImageIndex)]),
+                                ),
+                              )
                           ),
                           const SizedBox(height: 16),
                           Text(
@@ -204,7 +271,6 @@ class _MainSettingPageState extends State<MainSettingPage> {
                     ),
                   ),
 
-                  // Profile options
                   SliverPadding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
                     sliver: SliverList(
@@ -247,7 +313,8 @@ class _MainSettingPageState extends State<MainSettingPage> {
                       ]),
                     ),
                   ),
-                  const SliverToBoxAdapter(child: SizedBox(height: 50)), // Bottom padding
+
+                  const SliverToBoxAdapter(child: SizedBox(height: 40)),
                 ],
               ),
             ],
@@ -256,6 +323,7 @@ class _MainSettingPageState extends State<MainSettingPage> {
       ),
     );
   }
+
 }
 
 class ProfileWidget extends StatelessWidget {
