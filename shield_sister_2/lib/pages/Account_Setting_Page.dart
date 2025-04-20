@@ -302,7 +302,25 @@ class _AccountSettingPageState extends State<AccountSettingPage> {
       fireId = prefs.getString('fireId') ?? "";
     });
   }
-
+  Future<void> _performDelete(BuildContext context) async{
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Account Deleted  successfully', style: GoogleFonts.poppins()),
+        backgroundColor: Colors.grey.shade800,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+    );
+    try {
+      if(mounted){
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.remove('jwtToken');
+        Navigator.pushReplacementNamed(context, '/log');
+      }
+    }catch(e){
+      print("Error Navigating to Login Page $e");
+    }
+  }
   Future<void> _updateProfileInFirestore() async {
     await FirebaseFirestore.instance.collection('users').doc(fireId).update({
       'myProf': int.parse(selectedImageIndex),
@@ -422,11 +440,7 @@ class _AccountSettingPageState extends State<AccountSettingPage> {
         ),
         ),
         );
-        Navigator.pushNamedAndRemoveUntil(
-        context,
-        '/login',
-        (route) => false,
-        );
+        _performDelete(context);
         }
         } else {
         ScaffoldMessenger.of(context).showSnackBar(
