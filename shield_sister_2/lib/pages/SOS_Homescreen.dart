@@ -93,6 +93,7 @@ class _SOSHomescreenState extends State<SOSHomescreen> {
     final sosExist = prefs.getString('isSOSPresent');
     if(sosExist == "true"){
       final sosCode = prefs.getString('SOSCode') ?? "";
+      print("Existing SOS code: $sosCode");
       if (mounted) {
         Navigator.push(
           context,
