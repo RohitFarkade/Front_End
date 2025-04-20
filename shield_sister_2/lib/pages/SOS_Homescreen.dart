@@ -40,6 +40,7 @@ class _SOSHomescreenState extends State<SOSHomescreen> {
     setState(() {
       userId = prefs.getString('userId') ?? "";
       fireId = prefs.getString('fireId') ?? "";
+      print("In Shared Prefs the profile number is ${prefs.getString('profileNumber')}");
     });
   }
 
