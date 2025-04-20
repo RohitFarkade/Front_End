@@ -9,6 +9,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'dart:io';
 import 'package:intl/intl.dart';
 import 'dart:math';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
   // final String _baseUrl = "http://10.0.2.2:5000/api/sos/savecontacts";
@@ -22,7 +23,7 @@ class AuthService {
   final String link = "https://shield-sisters-dep-d4z8.vercel.app/api";
   final String _baseUrl2 = "https://shield-sisters-dep-d4z8.vercel.app/api/sos/sendsos";
   final String _contactUrl = "https://shield-sisters-dep-d4z8.vercel.app/api/sos";
-
+  static const String link1 = "https://shield-sisters-dep-d4z8.vercel.app/api"; // replace this
   Map<String, String> _headers() =>
       {
         'Content-Type': 'application/json',
@@ -429,6 +430,55 @@ print(SOSCode);
       return json.decode(response.body);
     } else {
       return {'success': false, 'message': 'Failed to reset password'};
+    }
+  }
+
+ static Future<Map<String, dynamic>> updateUserProfile( Map<String, dynamic> data) async {
+    final url = Uri.parse('$link1/users/update');
+
+    final response = await http.put(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 200) {
+      final resBody = jsonDecode(response.body);
+      return {
+        'success': true,
+        'message': resBody['message'],
+        'data': resBody['updatedUser'],
+      };
+    } else {
+      final error = jsonDecode(response.body);
+      return {
+        'success': false,
+        'message': error['error'] ?? 'Failed to update profile',
+      };
+    }
+  }
+  Future<Map<String, dynamic>> deleteUserProfile() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString('userId');
+
+    final response = await http.post(
+      Uri.parse('$link1/users/delete'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'userId': userId,
+      }),
+    );
+
+    final result = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      return {'success': true, 'message': result['message']};
+    } else {
+      return {'success': false, 'error': result['error'] ?? 'Unknown error'};
     }
   }
 

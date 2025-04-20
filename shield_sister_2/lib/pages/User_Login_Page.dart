@@ -74,6 +74,8 @@ class _UserLoginPageState extends State<UserLoginPage> {
         await prefs.setString('userId', result['user']['_id']);
         await prefs.setString('jwtToken', result['token']);
         await prefs.setString('username', result['user']['fullname']);
+        await prefs.setString('phone', result['user']['phone'] ?? '');
+        await prefs.setString('address', result['user']['address'] ?? '');
         await prefs.setString('email', result['user']['email']);
         String? fireId = await getUserIdByemail(result['user']['email']);
         await prefs.setString('fireId', fireId!);
