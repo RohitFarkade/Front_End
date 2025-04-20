@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 class AccountSettingPage extends StatelessWidget {
   AccountSettingPage({super.key});
 
+
   // Function to handle Edit Account (Navigate to Edit Page)
   void _editAccount(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -25,6 +26,7 @@ class AccountSettingPage extends StatelessWidget {
       const SnackBar(content: Text('Update Profile Photo Functionality')),
     );
   }
+
 
   // Function to handle Delete Account
   void _deleteAccount(BuildContext context) {
@@ -156,7 +158,8 @@ class AccountSettingPage extends StatelessWidget {
               icon: Icons.lock,
               title: 'Change Password',
               color: Colors.deepOrangeAccent,
-              onPressed: () => _changePassword(context),
+
+              onPressed: () => Navigator.pushNamed(context, '/forget'),
             ),
             const SizedBox(height: 10),
             _buildAccountOption(
