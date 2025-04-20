@@ -152,6 +152,7 @@
 //     );
 //   }
 // }
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shield_sister_2/backend/Authentication.dart';
@@ -170,6 +171,7 @@ class _UpdateAccountPageState extends State<UpdateAccountPage> {
   TextEditingController? _emailController;
   TextEditingController? _phoneController;
   TextEditingController? _addressController;
+  String fireId = "";
 
   bool _isLoading = false;
   bool _isDataLoaded = false;
@@ -188,12 +190,14 @@ class _UpdateAccountPageState extends State<UpdateAccountPage> {
     final phone = prefs.getString('phone') ?? '';
     final address = prefs.getString('address') ?? '';
 
+
     setState(() {
       _fullnameController = TextEditingController(text: fullname);
       _emailController = TextEditingController(text: email);
       _phoneController = TextEditingController(text: phone);
       _addressController = TextEditingController(text: address);
       _isDataLoaded = true;
+      fireId = prefs.getString("fireId") ?? "";
     });
   }
 
@@ -234,6 +238,13 @@ class _UpdateAccountPageState extends State<UpdateAccountPage> {
         await prefs.setString('email', _emailController!.text.trim());
         await prefs.setString('phone', _phoneController!.text.trim());
         await prefs.setString('address', _addressController!.text.trim());
+
+        await FirebaseFirestore.instance.collection('users').doc(fireId).update({
+          'email': _emailController!.text.trim(),
+          'name': _fullnameController!.text.trim(),
+          'phone': _phoneController!.text.trim(),
+        });
+
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

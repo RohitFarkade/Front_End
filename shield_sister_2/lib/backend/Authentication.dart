@@ -382,8 +382,9 @@ print(SOSCode);
       if (response.statusCode == 200 || response.statusCode == 201) {
         return jsonDecode(response.body);
       } else {
+        // print("This is the response body : ${jsonDecode(response.body)}");
         return {
-          "message": jsonDecode(response.body)['message'] ?? 'Error occurred',
+          "message": jsonDecode(response.body) ?? 'Error occurred',
         };
       }
     } catch (e) {
@@ -474,6 +475,7 @@ print(SOSCode);
     );
 
     final result = jsonDecode(response.body);
+    print("DELETE ACCOUNT RESONSE.BODY: ${result}");
 
     if (response.statusCode == 200) {
       return {'success': true, 'message': result['message']};

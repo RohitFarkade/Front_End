@@ -302,25 +302,27 @@ class _AccountSettingPageState extends State<AccountSettingPage> {
       fireId = prefs.getString('fireId') ?? "";
     });
   }
-  Future<void> _performDelete(BuildContext context) async{
+
+  Future<void> _performDelete(BuildContext context) async {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Account Deleted  successfully', style: GoogleFonts.poppins()),
+        content:
+            Text('Account Deleted  successfully', style: GoogleFonts.poppins()),
         backgroundColor: Colors.grey.shade800,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
     try {
-      if(mounted){
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.remove('jwtToken');
+      if (context.mounted) {
+        print("Before log out the widget is mounted");
         Navigator.pushReplacementNamed(context, '/log');
       }
-    }catch(e){
+    } catch (e) {
       print("Error Navigating to Login Page $e");
     }
   }
+
   Future<void> _updateProfileInFirestore() async {
     await FirebaseFirestore.instance.collection('users').doc(fireId).update({
       'myProf': int.parse(selectedImageIndex),
@@ -348,7 +350,8 @@ class _AccountSettingPageState extends State<AccountSettingPage> {
                   setState(() {
                     selectedImageIndex = index.toString();
                   });
-                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                  SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
                   await prefs.setString('profileNumber', selectedImageIndex);
                   await _updateProfileInFirestore();
                   Navigator.pop(context);
@@ -393,7 +396,8 @@ class _AccountSettingPageState extends State<AccountSettingPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Text(
             'Delete Account',
             style: GoogleFonts.poppins(
@@ -404,77 +408,92 @@ class _AccountSettingPageState extends State<AccountSettingPage> {
           ),
           content: Text(
             'Are you sure you want to delete your account? This action cannot be undone.',
-          style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey.shade700),
-        ),
-        actions: [
-        TextButton(
-        child: Text(
-        'Cancel',
-        style: GoogleFonts.poppins(fontSize: 16, color: Colors.black),
-        ),
-        onPressed: () => Navigator.of(context).pop(),
-        ),
-        TextButton(
-        child: Text(
-        'Delete',
-        style: GoogleFonts.poppins(fontSize: 16, color: Colors.red),
-        ),
-        onPressed: () async {
-        Navigator.of(context).pop();
-        try {
-        final result = await AuthService().deleteUserProfile();
-        if (result['success']) {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.clear();
-        if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-        content: Text(
-        result['message'],
-        style: GoogleFonts.poppins(),
-        ),
-        backgroundColor: Colors.grey.shade800,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-        ),
-        ),
-        );
-        _performDelete(context);
-        }
-        } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-        content: Text(
-        'Error: ${result['error']}',
-        style: GoogleFonts.poppins(),
-        ),
-        backgroundColor: Colors.grey.shade800,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-        ),
-        ),
-        );
-        }
-        } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-        content: Text(
-        'Failed to delete account: $e',
-        style: GoogleFonts.poppins(),
-        ),
-        backgroundColor: Colors.grey.shade800,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-        ),
-        ),
-        );
-        }
-        },
-        ),
-        ],
+            style:
+                GoogleFonts.poppins(fontSize: 16, color: Colors.grey.shade700),
+          ),
+          actions: [
+            TextButton(
+              child: Text(
+                'Cancel',
+                style: GoogleFonts.poppins(fontSize: 16, color: Colors.black),
+              ),
+              // onPressed: () => Navigator.of(context).pop(),
+
+              onPressed: ()=> Navigator.pop(context),
+            ),
+            TextButton(
+              child: Text(
+                'Delete',
+                style: GoogleFonts.poppins(fontSize: 16, color: Colors.red),
+              ),
+              onPressed: () async {
+                // Navigator.of(context).pop();
+                // Navigator.pop(context);
+                try {
+                  final result = await AuthService().deleteUserProfile();
+                  if (result['success']) {
+                    final prefs = await SharedPreferences.getInstance();
+
+                    FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(fireId)
+                        .delete();
+
+                    await prefs.clear();
+
+                    print("The value of mounted: ${mounted}");
+
+                    //   if (mounted) {
+                    //     ScaffoldMessenger.of(context).showSnackBar(
+                    //       SnackBar(
+                    //         content: Text(
+                    //           result['message'],
+                    //           style: GoogleFonts.poppins(),
+                    //         ),
+                    //         backgroundColor: Colors.grey.shade800,
+                    //         behavior: SnackBarBehavior.floating,
+                    //         shape: RoundedRectangleBorder(
+                    //           borderRadius: BorderRadius.circular(10),
+                    //         ),
+                    //       ),
+                    //     );
+                    //     await _performDelete(context);
+                    //   }
+                    // } else {
+                    //   ScaffoldMessenger.of(context).showSnackBar(
+                    //     SnackBar(
+                    //       content: Text(
+                    //         'Error: ${result['error']}',
+                    //         style: GoogleFonts.poppins(),
+                    //       ),
+                    //       backgroundColor: Colors.grey.shade800,
+                    //       behavior: SnackBarBehavior.floating,
+                    //       shape: RoundedRectangleBorder(
+                    //         borderRadius: BorderRadius.circular(10),
+                    //       ),
+                    //     ),
+                    //   );
+                    // }
+                    await _performDelete(context);
+                  }
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Failed to delete account: $e',
+                        style: GoogleFonts.poppins(),
+                      ),
+                      backgroundColor: Colors.grey.shade800,
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  );
+                }
+              },
+            ),
+          ],
         );
       },
     );
@@ -558,7 +577,8 @@ class _AccountSettingPageState extends State<AccountSettingPage> {
                                 CircleAvatar(
                                   radius: 60,
                                   backgroundImage: AssetImage(
-                                    profileImages[int.parse(selectedImageIndex)],
+                                    profileImages[
+                                        int.parse(selectedImageIndex)],
                                   ),
                                 ),
                                 Positioned(

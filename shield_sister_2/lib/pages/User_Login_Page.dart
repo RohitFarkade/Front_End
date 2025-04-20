@@ -85,9 +85,10 @@ class _UserLoginPageState extends State<UserLoginPage> {
 
         Navigator.pushReplacementNamed(context, '/bot');
       } else {
+        print("result[message][error]: ${result['message']['error']}");
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(result['message'] ?? 'Unknown error occurred'),
+            content: Text(result['message']['error'] ?? 'Unknown error occurred'),
             duration: const Duration(seconds: 2),
           ),
         );

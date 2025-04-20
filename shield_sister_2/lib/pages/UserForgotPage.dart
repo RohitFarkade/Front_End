@@ -101,7 +101,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       if (!mounted) return;
 
       if (result['message'] == "Password reset successfully") {
-        _showSnackBar("Password reset successful");
+        _showSnackBar("Password reset successful", isError: false);
         // Use pushReplacementNamed safely
         Navigator.pushReplacementNamed(context, '/log');
       } else {
