@@ -121,10 +121,10 @@ class _UserLoginPageState extends State<UserLoginPage> {
               children: [
                 Text(
                   'Welcome Back!',
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.openSans(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                    color: Color(0xFF00695C),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -132,7 +132,7 @@ class _UserLoginPageState extends State<UserLoginPage> {
                   'Login to continue',
                   style: GoogleFonts.poppins(
                     fontSize: 18,
-                    color: Colors.grey,
+                    color: Colors.teal.shade300,
                   ),
                 ),
                 const SizedBox(height: 30),
@@ -140,7 +140,7 @@ class _UserLoginPageState extends State<UserLoginPage> {
                   controller: emailController,
                   decoration: InputDecoration(
                     labelText: 'Email',
-                    prefixIcon: const Icon(Icons.email, color: Colors.black),
+                    prefixIcon: const Icon(Icons.email, color: Color(0xFFFF6F61)),
                     filled: true,
                     fillColor: Colors.grey.shade200,
                     border: OutlineInputBorder(
@@ -155,7 +155,7 @@ class _UserLoginPageState extends State<UserLoginPage> {
                   obscureText: true,
                   decoration: InputDecoration(
                     labelText: 'Password',
-                    prefixIcon: const Icon(Icons.lock, color: Colors.black),
+                    prefixIcon: const Icon(Icons.lock, color: Color(0xFFFF6F61)),
                     filled: true,
                     fillColor: Colors.grey.shade200,
                     border: OutlineInputBorder(
@@ -170,7 +170,7 @@ class _UserLoginPageState extends State<UserLoginPage> {
                     : ElevatedButton(
                   onPressed: login,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
+                    backgroundColor: Color(0xFFAAF0D1),
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 100),
                     shape: RoundedRectangleBorder(
@@ -180,6 +180,7 @@ class _UserLoginPageState extends State<UserLoginPage> {
                   child: Text(
                     'Login',
                     style: GoogleFonts.poppins(
+                      color: Color(0xFF00695C),
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
                     ),
@@ -194,7 +195,7 @@ class _UserLoginPageState extends State<UserLoginPage> {
                       onPressed: () => Navigator.pushReplacementNamed(context, '/reg'),
                       child: Text(
                         'Sign Up',
-                        style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: Colors.black),
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: Color(0xFF00695C)),
                       ),
                     ),
                   ],
@@ -206,7 +207,7 @@ class _UserLoginPageState extends State<UserLoginPage> {
                       onPressed: () => Navigator.pushNamed(context, '/forget'),
                       child: Text(
                         'Forgot Password?',
-                        style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: Colors.black),
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: Color(0xFF00695C)),
                       ),
                     ),
                   ],

@@ -220,11 +220,11 @@ class _SOSHomescreenState extends State<SOSHomescreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Shield Sisters 🛡️",
+          "Shield Sisters",
           style: GoogleFonts.openSans(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: Colors.pinkAccent
+              color: Color(0xFFFF6F61)
           ),
         ),
 
@@ -274,6 +274,7 @@ class _SOSHomescreenState extends State<SOSHomescreen> {
                         Text(
                           "Emergency Help?",
                           style: GoogleFonts.openSans(
+                            color: Color(0xFF212121),
                             fontWeight: FontWeight.bold,
                             fontSize: 34,
                           ),
@@ -285,7 +286,7 @@ class _SOSHomescreenState extends State<SOSHomescreen> {
                           style: GoogleFonts.roboto(
                             fontSize: 16,
                             height: 1.5,
-                            color: Colors.grey.shade600,
+                            color: Color(0xFF757575),
                           ),
                           textAlign: TextAlign.center,
                         ),

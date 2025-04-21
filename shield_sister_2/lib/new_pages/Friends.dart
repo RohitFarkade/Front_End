@@ -207,17 +207,17 @@ class _FriendsListPageState extends State<FriendsListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xFFFFFDFD),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFFC0CB), // Soft pink from the theme
+        backgroundColor: const Color(0xFFE0F2F1),
         title: const Text(
-          "My Friends 💕",
-          style: TextStyle(color: Colors.white),
+          "My Friends",
+          style: TextStyle(color: Color(0xFF009688)),
         ),
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.help, color: Colors.white),
+            icon: const Icon(Icons.help, color: Color(0xFFFFD180)),
             onPressed: () {
               // SOS or Help action
             },
@@ -236,7 +236,7 @@ class _FriendsListPageState extends State<FriendsListPage> {
                 }
 
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text('No friends added yet 💌', style: TextStyle(color: Colors.black54)));
+                  return const Center(child: Text('No friends added yet 💌', style: TextStyle(color: Color(0xFF757575))));
                 }
 
                 final friends = snapshot.data!;
@@ -263,7 +263,7 @@ class _FriendsListPageState extends State<FriendsListPage> {
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFFFFC0CB).withOpacity(0.3),
+                              color: const Color(0xFFE0F2F1),
                               blurRadius: 4,
                               offset: const Offset(2, 3),
                               spreadRadius: 0.5,
@@ -276,12 +276,12 @@ class _FriendsListPageState extends State<FriendsListPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             CircleAvatar(
-                              backgroundColor: const Color(0xFFFFC0CB),
+                              backgroundColor: Color(0xFFAAF0D1),
                               child: Text(
                                 avatarLetter,
                                 style: const TextStyle(
                                   fontSize: 20,
-                                  color: Colors.white,
+                                  color: Color(0xFF009688),
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -292,7 +292,7 @@ class _FriendsListPageState extends State<FriendsListPage> {
                               style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,
-                                color: Colors.black87,
+                                color: Color(0xFF212121),
                               ),
                               textAlign: TextAlign.center,
                             ),

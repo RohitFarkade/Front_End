@@ -607,7 +607,7 @@ class _WebSocketPageState extends State<WebSocketPage> {
   }
 
   @override
-  void dispose() {
+  Future<void> dispose() async{
     _retryTimer?.cancel();
     socket.dispose();
     _mapController.dispose();
@@ -617,6 +617,19 @@ class _WebSocketPageState extends State<WebSocketPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Color(0xFF009688)),
+          onPressed: () async{
+            await dispose();
+            Future.delayed(Duration(seconds: 2));
+            Navigator.pushReplacementNamed(context, '/bot');
+          },
+        ),
+        title: Text('Community Alert', style: GoogleFonts.poppins(color: Color(0xFF009688))),
+        backgroundColor: Color(0xFFE0F2F1),
+      ),
       body: Stack(
         children: [
           currentPosition == null

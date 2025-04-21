@@ -48,10 +48,10 @@ class newHelplinePage extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
-          'Helpline Numbers 💕',
-          style: TextStyle(color: Colors.white),
+          'Helpline Numbers',
+          style: TextStyle(color: Color(0xFF009688)),
         ),
-        backgroundColor: const Color(0xFFFFC0CB), // Soft pink from theme
+        backgroundColor: const Color(0xFFE0F2F1), // Soft pink from theme
         elevation: 0,
       ),
       body: SafeArea(
@@ -103,7 +103,7 @@ class newHelplinePage extends StatelessWidget {
                   ),
                 ),
                 trailing: IconButton(
-                  icon: const Icon(Icons.call, color: Color(0xFFFF4D6D)),
+                  icon: const Icon(Icons.call, color: Color(0xFF009688)),
                   onPressed: () {
                     _callhelp(helplines[index][1]);
                   },

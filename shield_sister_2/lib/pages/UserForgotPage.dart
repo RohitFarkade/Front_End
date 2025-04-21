@@ -144,8 +144,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Forgot Password", style: GoogleFonts.poppins(color: Colors.white)),
-        backgroundColor: Colors.black,
+        title: Text("Forgot Password", style: GoogleFonts.openSans(color: Colors.white)),
+        backgroundColor: Colors.teal.shade200,
         iconTheme: const IconThemeData(color: Colors.white), // Make back button white
       ),
       body: Padding(
@@ -156,13 +156,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           child: ListView( // Use ListView to prevent overflow on smaller screens
             children: [
               Text("Reset Your Password",
-                  style: GoogleFonts.poppins(fontSize: 28, fontWeight: FontWeight.bold)),
+                  style: GoogleFonts.openSans(color: Colors.teal,fontSize: 28, fontWeight: FontWeight.bold)),
               const SizedBox(height: 10),
               Text(
                   isOtpSent
                       ? "Enter the OTP sent to your email and set a new password."
                       : "We'll send you an OTP to reset your password.",
-                  style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey.shade700)),
+                  style: GoogleFonts.poppins(fontSize: 16, color: Colors.black)),
               const SizedBox(height: 30),
 
               // --- Email Field ---
@@ -172,7 +172,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 readOnly: isOtpSent,
                 decoration: InputDecoration(
                   labelText: "Email",
-                  prefixIcon: const Icon(Icons.email),
+                  prefixIcon: Icon(Icons.email, color: Color(0xFFFF6F61),),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                 ),
                 keyboardType: TextInputType.emailAddress,
@@ -199,7 +199,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   controller: otpController,
                   decoration: InputDecoration(
                     labelText: "Enter OTP",
-                    prefixIcon: const Icon(Icons.lock_open),
+                    prefixIcon: Icon(Icons.lock_open, color: Color(0xFFFF6F61),),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                   ),
                   keyboardType: TextInputType.number,
@@ -223,7 +223,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   obscureText: true,
                   decoration: InputDecoration(
                     labelText: "New Password",
-                    prefixIcon: const Icon(Icons.lock),
+                    prefixIcon: Icon(Icons.lock, color: Color(0xFFFF6F61),),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                     // Consider adding a toggle visibility icon
                   ),
@@ -236,7 +236,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   // Disable button while resetting
                   onPressed: isResettingPassword ? null : verifyOtpAndResetPassword,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
+                    backgroundColor: Color(0xFFAAF0D1),
                     padding: const EdgeInsets.symmetric(vertical: 15),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     // Dim button when disabled
@@ -254,7 +254,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       ),
                     )
                         : Text("Reset Password",
-                        style: GoogleFonts.poppins(fontSize: 16, color: Colors.white)),
+                        style: GoogleFonts.poppins(fontSize: 16, color: Color(0xFF00695C))),
                   ),
                 ),
                 // Add Resend OTP option? (Optional)
@@ -269,7 +269,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   // Disable button while sending
                   onPressed: isSendingOtp ? null : sendOtp,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
+                    backgroundColor: Color(0xFFAAF0D1),
                     padding: const EdgeInsets.symmetric(vertical: 15),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     // Dim button when disabled
@@ -286,7 +286,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       ),
                     )
                         : Text("Send OTP",
-                        style: GoogleFonts.poppins(fontSize: 16, color: Colors.white)),
+                        style: GoogleFonts.poppins(fontSize: 16, color: Color(0xFF00695C))),
                   ),
                 ),
             ],

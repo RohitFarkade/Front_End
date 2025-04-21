@@ -200,13 +200,13 @@ class _NotificationsPageState extends State<NotificationsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xFFFFFDFD),
       appBar: AppBar(
         title: const Text(
-          'SOS Notifications 💕',
-          style: TextStyle(color: Colors.white),
+          'SOS Notifications',
+          style: TextStyle(color: Color(0xFF009688)),
         ),
-        backgroundColor: const Color(0xFFFFC0CB), // Soft pink from theme
+        backgroundColor: const Color(0xFFE0F2F1),
         elevation: 0,
       ),
       body: currentUserId.isEmpty || currentUserFriends == null
@@ -263,11 +263,11 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 child: ListTile(
                   contentPadding: const EdgeInsets.all(16.0),
                   leading: CircleAvatar(
-                    backgroundColor: const Color(0xFFFFC0CB), // Theme pink
+                    backgroundColor: const Color(0xFFAAF0D1), // Theme pink
                     child: Text(
                       senderName[0].toUpperCase(),
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: Color(0xFF009688),
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),

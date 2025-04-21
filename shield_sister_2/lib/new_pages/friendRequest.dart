@@ -277,15 +277,15 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFFC0CB), // Soft pink from theme
+        backgroundColor: const Color(0xFFE0F2F1), // Soft pink from theme
         title: const Text(
-          'Pending Friend Requests 💕',
-          style: TextStyle(color: Colors.white),
+          'Pending Friend Requests',
+          style: TextStyle(color: Color(0xFF009688)),
         ),
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.help, color: Colors.white),
+            icon: const Icon(Icons.help, color: Color(0xFFFFD180)),
             onPressed: () {
               // SOS or Help action
             },
@@ -336,12 +336,12 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
 
                           return ListTile(
                             leading: CircleAvatar(
-                              backgroundColor: const Color(0xFFFFC0CB),
+                              backgroundColor: const Color(0xFFAAF0D1),
                               child: Text(
                                 friendName.isNotEmpty ? friendName[0].toUpperCase() : '?',
                                 style: const TextStyle(
                                   fontSize: 20,
-                                  color: Colors.white,
+                                  color: Color(0xFF009688),
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -409,10 +409,10 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
                                     setState(() {});
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFFFFC0CB),
-                                    foregroundColor: Colors.white,
+                                    backgroundColor: const Color(0xFFAAF0D1),
+                                    foregroundColor: Color(0xFF009688),
                                   ),
-                                  child: const Text("Accept"),
+                                  child: Icon(Icons.check),
                                 ),
                                 const SizedBox(width: 8),
                                 ElevatedButton(
@@ -439,10 +439,10 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
                                     setState(() {});
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFFFF4D6D),
+                                    backgroundColor: const Color(0xFFF28B82),
                                     foregroundColor: Colors.white,
                                   ),
-                                  child: const Text("Reject"),
+                                  child: Icon(Icons.cancel),
                                 ),
                               ],
                             ),

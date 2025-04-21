@@ -71,7 +71,7 @@ class _ShareLocationNewState extends State<ShareLocationNew> {
             ActionButton(
               label: 'Share Location',
               icon: Icons.location_on,
-              color: const Color(0xFF66BB6A), // green
+              color: const Color(0xFF009688), // green
               onPressed: () async {
                 try {
                   String id = await _locationService.startSharing();

@@ -55,7 +55,7 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
   InputDecoration _inputDecoration({required String label, IconData? icon}) {
     return InputDecoration(
       labelText: label,
-      prefixIcon: icon != null ? Icon(icon, color: Colors.black) : null,
+      prefixIcon: icon != null ? Icon(icon, color: Color(0xFFFF6F61)) : null,
       filled: true,
       fillColor: Colors.grey.shade200,
       border: OutlineInputBorder(
@@ -197,7 +197,7 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
             onPressed: () => Navigator.pushReplacementNamed(context, '/log'),
           ),
           title: Text('Sign Up', style: GoogleFonts.poppins(color: Colors.white)),
-          backgroundColor: Colors.black,
+          backgroundColor: Colors.grey,
         ),
         backgroundColor: Colors.white,
         body: SafeArea(
@@ -214,9 +214,9 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text('Create an Account',
-                              style: GoogleFonts.poppins(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.black)),
+                              style: GoogleFonts.openSans(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.teal)),
                           const SizedBox(height: 10),
-                          Text('Sign up to get started', style: GoogleFonts.poppins(fontSize: 18, color: Colors.grey)),
+                          Text('Sign up to get started', style: GoogleFonts.poppins(fontSize: 18, color: Colors.teal.shade300)),
                           const SizedBox(height: 30),
                           TextField(
                             focusNode: fullnameFocus,
@@ -264,7 +264,7 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
                                 ElevatedButton(
                                   onPressed: isLoading ? null : verifyOtp,
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.black,
+                                    backgroundColor: Color(0xFFAAF0D1),
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                     padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 14),
                                   ),
@@ -279,7 +279,7 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
                                   )
                                       : Text(
                                     'Verify OTP',
-                                    style: GoogleFonts.poppins(color: Colors.white, fontSize: 16),
+                                    style: GoogleFonts.poppins(color: Color(0xFF00695C), fontSize: 16),
                                   ),
                                 ),
                               ],
@@ -288,7 +288,7 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
                             ElevatedButton(
                               onPressed: isLoading ? null : sendOtpToEmail,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.black,
+                                backgroundColor: Color(0xFFAAF0D1),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                 padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 14),
                               ),
@@ -303,7 +303,7 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
                               )
                                   : Text(
                                 'Send OTP to Email',
-                                style: GoogleFonts.poppins(color: Colors.white, fontSize: 16),
+                                style: GoogleFonts.poppins(color: Color(0xFF00695C), fontSize: 16),
                               ),
                             ),
                           const SizedBox(height: 20),
@@ -330,10 +330,10 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
                             child: ElevatedButton(
                               onPressed: isLoading || !isOtpVerified ? null : register,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.black,
+                                backgroundColor: Color(0xFFAAF0D1),
                                 padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-                                disabledBackgroundColor: Colors.black.withOpacity(0.5),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                // disabledBackgroundColor: Colors.deepOrange.shade,
                               ),
                               child: isLoading
                                   ? const CircularProgressIndicator(
@@ -344,7 +344,7 @@ class _UserRegistrationPageState extends State<UserRegistrationPage> {
                                 style: GoogleFonts.poppins(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                                  color: Color(0xFF00695C),
                                 ),
                               ),
                             ),

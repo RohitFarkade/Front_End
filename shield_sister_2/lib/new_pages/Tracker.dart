@@ -66,15 +66,15 @@ class _TrackerState extends State<Tracker> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFFC0CB), // Soft pink from the theme
+        backgroundColor: const Color(0xFFE0F2F1), // Soft pink from the theme
         title: const Text(
           "Location Shared to you",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Color(0xFF009688)),
         ),
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.help, color: Colors.white),
+            icon: const Icon(Icons.help, color: Color(0xFFFFD180)),
             onPressed: () {
               // SOS or Help action
             },
