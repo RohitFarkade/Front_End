@@ -87,9 +87,9 @@ class _MainManualPageState extends State<MainManualPage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
-          'Safety Manuals 📕',
+          'Safety Manuals',
           style: GoogleFonts.openSans(
-            color: Colors.pinkAccent,
+            color: Color(0xFFFF6F61),
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
@@ -190,11 +190,11 @@ class _MainManualPageState extends State<MainManualPage> {
         width: 150,
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFFF4D6D) : Colors.white,
+          color: isSelected ? const Color(0xFFAAF0D1) : Colors.white,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFFFFC0CB).withOpacity(0.3),
+              color: const Color(0xFF009688).withOpacity(0.3),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),
@@ -204,7 +204,7 @@ class _MainManualPageState extends State<MainManualPage> {
           child: Text(
             name,
             style: TextStyle(
-              color: isSelected ? Colors.white : Colors.black87,
+              color: isSelected ? Color(0xFF009688) : Colors.black87,
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),

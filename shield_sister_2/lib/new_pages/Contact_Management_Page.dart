@@ -300,7 +300,7 @@ class _ContactManagementPageState extends State<ContactManagementPage> {
           style: GoogleFonts.openSans(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: Colors.pinkAccent,
+            color: Color(0xFFFF6F61),
             shadows: [
               Shadow(
                 color: Colors.grey.withOpacity(0.5),
@@ -312,7 +312,7 @@ class _ContactManagementPageState extends State<ContactManagementPage> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh, color: Colors.black),
+            icon: const Icon(Icons.refresh, color: Color(0xFF009688)),
             onPressed: _fetchContacts,
           ),
         ],
@@ -410,15 +410,15 @@ class _ContactManagementPageState extends State<ContactManagementPage> {
                         ElevatedButton(
                           onPressed: _isLoading ? null : _addContact,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.pink,
-                            foregroundColor: Colors.white,
+                            backgroundColor: Color(0xFFAAF0D1),
+                            foregroundColor: Color(0xFF009688),
                             minimumSize: const Size(double.infinity, 50),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                             elevation: 8,
                           ),
                           child: Text(
                             "Save Contact",
-                            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+                            style: GoogleFonts.poppins( color: Color(0xFF009688),fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                         ),
                         const SizedBox(height: 32),
@@ -440,13 +440,13 @@ class _ContactManagementPageState extends State<ContactManagementPage> {
                               color: Colors.white,
                               child: ListTile(
                                 leading: CircleAvatar(
-                                  backgroundColor: Colors.deepOrange,
+                                  backgroundColor: Color(0xFFAAF0D1),
                                   child: Text(
                                     contact.name[0].toUpperCase(),
                                     style: GoogleFonts.poppins(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.white,
+                                      color: Color(0xFF009688),
                                     ),
                                   ),
                                 ),

@@ -557,11 +557,11 @@ class _MapDisplayPageState extends State<MapDisplayPage> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          "Safety Map 🗺️",
+                          "Safety Map",
                           style: GoogleFonts.poppins(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
-                              color: Colors.pinkAccent),
+                              color: Color(0xFFFF6F61)),
                         ),
                       ),
                     ],
@@ -579,8 +579,8 @@ class _MapDisplayPageState extends State<MapDisplayPage> {
                           _mapController?.animateCamera(
                               CameraUpdate.newLatLng(_currentPosition));
                         },
-                  backgroundColor: Color(0xFF009688),
-                  child: const Icon(Icons.my_location, color: Colors.white),
+                  backgroundColor: Color(0xFFAAF0D1),
+                  child: const Icon(Icons.my_location, color: Color(0xFF009688)),
                 ),
               ),
               Positioned(
@@ -750,7 +750,7 @@ class _MapDisplayPageState extends State<MapDisplayPage> {
     return ElevatedButton(
       onPressed: _isLoading ? null : onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xFF673AB7),
+        backgroundColor: Color(0xFF009688),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         elevation: 8,

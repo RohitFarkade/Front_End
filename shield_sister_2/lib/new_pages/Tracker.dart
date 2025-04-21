@@ -147,12 +147,12 @@ class _TrackerState extends State<Tracker> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               CircleAvatar(
-                                backgroundColor: const Color(0xFFFFC0CB),
+                                backgroundColor: const Color(0xFFAAF0D1),
                                 child: Text(
                                   avatarLetter,
                                   style: const TextStyle(
                                     fontSize: 20,
-                                    color: Colors.white,
+                                    color: Color(0xFF009688),
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),

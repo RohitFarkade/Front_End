@@ -549,17 +549,17 @@ class _MainSettingPageState extends State<MainSettingPage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          "Settings 🛠️",
+          "Settings",
           style: GoogleFonts.openSans(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: Colors.pinkAccent,
+            color: Color(0xFFFF6F61),
           ),
         ),
         centerTitle: false,
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings, color: Colors.black),
+            icon: const Icon(Icons.settings, color: Color(0xFF009688)),
             onPressed: (){
               Navigator.push(
                 context,
@@ -636,14 +636,14 @@ class _MainSettingPageState extends State<MainSettingPage> {
                             style: GoogleFonts.poppins(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                              color: Color(0xFF009688),
                             ),
                           ),
                           Text(
                             userEmail,
                             style: GoogleFonts.poppins(
                               fontSize: 16,
-                              color: Colors.grey.shade700,
+                              color: Colors.grey,
                             ),
                           ),
                         ],
@@ -740,7 +740,7 @@ class ProfileWidget extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, color: Colors.black, size: 26),
+            Icon(icon, color: Color(0xFFFF6F61), size: 26),
             const SizedBox(width: 16),
             Expanded(
               child: Text(
